@@ -15,14 +15,14 @@ import { initJsPsych } from "jspsych";
 // i18n JSON (ROOT ALIAS)
 // -----------------------------------------------------------------------------
 
-import trTranslations from "/src/locales/tr/translation.json";
-import deTranslations from "/src/locales/de/translation.json";
+import trTranslations from "../src/locales/tr/translation.json";
+import deTranslations from "../src/locales/de/translation.json";
 
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
 
-import { RunOptions } from "src/types/interfaces";
+import { RunOptions } from "../src/types/interfaces";
 
 // -----------------------------------------------------------------------------
 // Runner

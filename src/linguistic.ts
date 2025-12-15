@@ -12,13 +12,14 @@ import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import PreloadPlugin from "@jspsych/plugin-preload";
 import SurveyMultiChoicePlugin from "@jspsych/plugin-survey-multi-choice";
 import { initJsPsych } from "jspsych";
+import jsPsychPipe from "@jspsych-contrib/plugin-pipe";
 
 // -----------------------------------------------------------------------------
-// JSON & Static Data (ROOT ALIAS)
+// JSON & Static Data
 // -----------------------------------------------------------------------------
 
-import trTranslations from "/src/locales/tr/translation.json";
-import deTranslations from "/src/locales/de/translation.json";
+import trTranslations from "../src/locales/tr/translation.json";
+import deTranslations from "../src/locales/de/translation.json";
 import linguisticData from "../assets/linguistic/data.json";
 
 // -----------------------------------------------------------------------------
@@ -126,7 +127,6 @@ export async function run({ assetPaths }: RunOptions) {
   // ---------------------------------------------------------------------------
 
   const allStimuli = shuffleArray(linguisticData as SentenceData[]);
-
   const learningPhaseStimuli = allStimuli.slice(0, ITEM_COUNT_LEARNING);
   const unseenStimuli = allStimuli.slice(ITEM_COUNT_LEARNING);
 
@@ -259,9 +259,25 @@ export async function run({ assetPaths }: RunOptions) {
   });
 
   // ---------------------------------------------------------------------------
+  // DataPipe Upload Trial (en son)
+  // ---------------------------------------------------------------------------
+
+  const subject_id = jsPsych.randomization.randomID(10);
+  const filename = `${subject_id}.json`;
+
+  timeline.push({
+    type: jsPsychPipe,
+    action: "save",
+    experiment_id: "f03fiHSxWknF", // DataPipe Experiment ID
+    filename: filename,
+    data_string: () => jsPsych.data.get().json(),
+  });
+
+  // ---------------------------------------------------------------------------
   // Run
   // ---------------------------------------------------------------------------
 
   await jsPsych.run(timeline);
+
   return jsPsych;
 }
