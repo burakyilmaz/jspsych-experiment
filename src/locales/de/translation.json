@@ -1,0 +1,20 @@
+{
+  "welcome": "Willkommen",
+  "intro": {
+    "study_phase": "Ihnen werden nun nacheinander Sätze angezeigt.<br>Bitte lesen Sie diese sorgfältig durch.",
+    "test_phase": "Die Lernphase ist beendet.<br>Nun werden wir Ihnen einige Fragen stellen."
+  },
+  "buttons": {
+    "start": "Starten",
+    "continue": "Weiter",
+    "next": "Nächste",
+    "start_test": "Test starten",
+    "confirm": "Bestätigen"
+  },
+  "options": {
+    "new_sentence": "Das ist ein neuer Satz"
+  },
+  "feedback": {
+    "completion": "Das Experiment ist abgeschlossen. Vielen Dank."
+  }
+}

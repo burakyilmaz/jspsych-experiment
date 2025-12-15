@@ -1,0 +1,362 @@
+[
+  {
+    "id": 1,
+    "tr_sentence": "Gülten güzel bir ağaç ...",
+    "tr_option1": "çizdi",
+    "tr_option2": "çizmiş",
+    "de_sentence": "Gustav ... einen schönen Baum gezeichnet.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 2,
+    "tr_sentence": "Serkan bu şakayı çok ...",
+    "tr_option1": "büyüttü",
+    "tr_option2": "büyütmüş",
+    "de_sentence": "Albert ... den Witz sehr aufgebauscht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 3,
+    "tr_sentence": "İlhan utanarak hediyesini ...",
+    "tr_option1": "sakladı",
+    "tr_option2": "saklamış",
+    "de_sentence": "Erik ... verlegen sein Geschenk versteckt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 4,
+    "tr_sentence": "Hakan bütün odayı ...",
+    "tr_option1": "aydınlattı",
+    "tr_option2": "aydınlatmış",
+    "de_sentence": "Harald ... das ganze Zimmer erhellt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 5,
+    "tr_sentence": "Aysel günlerce yüzüğünü ...",
+    "tr_option1": "aradı",
+    "tr_option2": "aramış",
+    "de_sentence": "Anna ... tagelang nach ihrem Ring gesucht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 6,
+    "tr_sentence": "Merve dün yeni bir elbise ...",
+    "tr_option1": "aldı",
+    "tr_option2": "almış",
+    "de_sentence": "Maria ... gestern ein neues Kleid gekauft.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 7,
+    "tr_sentence": "Onur sabah bütün pencereleri ...",
+    "tr_option1": "açtı",
+    "tr_option2": "açmış",
+    "de_sentence": "Oliver ... am Morgen alle Fenster geöffnet.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 8,
+    "tr_sentence": "Zeynep kirli tabakları ...",
+    "tr_option1": "yıkadı",
+    "tr_option2": "yıkamış",
+    "de_sentence": "Nina ... die schmutzigen Teller gespült.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 9,
+    "tr_sentence": "Emre marketten süt ...",
+    "tr_option1": "aldı",
+    "tr_option2": "almış",
+    "de_sentence": "Marcel ... im Supermarkt Milch gekauft.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 10,
+    "tr_sentence": "Nazlı küçük kardeşine bisiklet sürmeyi ...",
+    "tr_option1": "öğretti",
+    "tr_option2": "öğretmiş",
+    "de_sentence": "Lena ... ihrer kleinen Schwester das Fahrradfahren beigebracht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 11,
+    "tr_sentence": "Duygu balkondaki çiçekleri ...",
+    "tr_option1": "suladı",
+    "tr_option2": "sulamış",
+    "de_sentence": "Diana ... die Blumen auf dem Balkon gegossen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 12,
+    "tr_sentence": "Sanem cumartesi akşamını evde ...",
+    "tr_option1": "geçirdi",
+    "tr_option2": "geçirmiş",
+    "de_sentence": "Sarah ... den Samstagabend zu Hause verbracht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 13,
+    "tr_sentence": "Kerem arabasını ...",
+    "tr_option1": "yıkadı",
+    "tr_option2": "yıkamış",
+    "de_sentence": "Karl ... sein Auto gewaschen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 14,
+    "tr_sentence": "Baran gömleğini ...",
+    "tr_option1": "ütüledi",
+    "tr_option2": "ütülemiş",
+    "de_sentence": "David ... sein Hemd gebügelt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 15,
+    "tr_sentence": "Okan eşyalarını kutuya ...",
+    "tr_option1": "yerleştirdi",
+    "tr_option2": "yerleştirmiş",
+    "de_sentence": "Oskar ... seine Sachen in einen Karton eingepackt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 16,
+    "tr_sentence": "Ece arkadaşına uzun bir özür mesajı ...",
+    "tr_option1": "gönderdi",
+    "tr_option2": "göndermiş",
+    "de_sentence": "Eva ... ihrem Freund eine lange Entschuldigungsnachricht geschickt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 17,
+    "tr_sentence": "Mert dün akşam bütün pastayı ...",
+    "tr_option1": "yedi",
+    "tr_option2": "yemiş",
+    "de_sentence": "Max ... gestern Abend den ganzen Kuchen gegessen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 18,
+    "tr_sentence": "Selin bu sabah kahvaltı için yumurta ...",
+    "tr_option1": "haşladı",
+    "tr_option2": "haşlamış",
+    "de_sentence": "Stefanie ... heute Morgen zum Frühstück ein Ei gekocht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 19,
+    "tr_sentence": "Tolga telefonunun ekranını ...",
+    "tr_option1": "kırdı",
+    "tr_option2": "kırmış",
+    "de_sentence": "Thomas ... das Display seines Handys zerbrochen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 20,
+    "tr_sentence": "Aslı üstüne meyve suyu ...",
+    "tr_option1": "döktü",
+    "tr_option2": "dökmüş",
+    "de_sentence": "Anja ... Saft auf ihr T-Shirt verschüttet.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 21,
+    "tr_sentence": "Yasin salondaki ampulü ...",
+    "tr_option1": "değiştirdi",
+    "tr_option2": "değiştirmiş",
+    "de_sentence": "Jan ... die Glühbirne im Wohnzimmer gewechselt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 22,
+    "tr_sentence": "Büşra misafirler için kek ...",
+    "tr_option1": "yaptı",
+    "tr_option2": "yapmış",
+    "de_sentence": "Bettina ... für die Gäste einen Kuchen gebacken.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 23,
+    "tr_sentence": "Canan yeni yıl hediyelerini ...",
+    "tr_option1": "paketledi",
+    "tr_option2": "paketlemiş",
+    "de_sentence": "Clara ... die Weihnachtsgeschenke eingepackt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 24,
+    "tr_sentence": "Burak odasındaki posterleri ...",
+    "tr_option1": "indirdi",
+    "tr_option2": "indirmiş",
+    "de_sentence": "Bastian ... die Poster in seinem Zimmer abgenommen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 25,
+    "tr_sentence": "Elif yeğeninin saçını ...",
+    "tr_option1": "ördü",
+    "tr_option2": "örmüş",
+    "de_sentence": "Emma ... ihrer Nichte die Haare geflochten.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 26,
+    "tr_sentence": "Kaan komşusunun kapısına bir not ...",
+    "tr_option1": "yapıştırdı",
+    "tr_option2": "yapıştırmış",
+    "de_sentence": "Kevin ... einen Zettel an die Tür seines Nachbarn geklebt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 27,
+    "tr_sentence": "Melis ebeveynlerinin çok güzel bir fotoğrafını ...",
+    "tr_option1": "çekti",
+    "tr_option2": "çekmiş",
+    "de_sentence": "Mia ... ein sehr schönes Foto von ihren Eltern gemacht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 28,
+    "tr_sentence": "Fırat takvime toplantı tarihini ...",
+    "tr_option1": "ekledi",
+    "tr_option2": "eklemiş",
+    "de_sentence": "Fabian ... den Besprechungstermin in den Kalender eingetragen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 29,
+    "tr_sentence": "Seda bu sabah kahvesine şeker ...",
+    "tr_option1": "ekledi",
+    "tr_option2": "eklemiş",
+    "de_sentence": "Sandra ... heute Morgen ihrem Kaffee Zucker hinzugefügt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 30,
+    "tr_sentence": "Deniz çöpleri dışarı ...",
+    "tr_option1": "çıkardı",
+    "tr_option2": "çıkarmış",
+    "de_sentence": "Daniel ... den Müll nach draußen gebracht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 31,
+    "tr_sentence": "Yelda montunu askıya ...",
+    "tr_option1": "astı",
+    "tr_option2": "asmış",
+    "de_sentence": "Yvonne ... ihre Jacke an die Garderobe gehängt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 32,
+    "tr_sentence": "Hüseyin sözleşmeyi ...",
+    "tr_option1": "imzaladı",
+    "tr_option2": "imzalamış",
+    "de_sentence": "Henrik ... den Vertrag unterschrieben.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 33,
+    "tr_sentence": "İpek salondaki duvara yeni bir tablo ...",
+    "tr_option1": "astı",
+    "tr_option2": "asmış",
+    "de_sentence": "Isabelle ... im Wohnzimmer ein neues Bild an die Wand gehängt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 34,
+    "tr_sentence": "Levent sevgilisine doğum günü hediyesi olarak bir kitap ...",
+    "tr_option1": "verdi",
+    "tr_option2": "vermiş",
+    "de_sentence": "Lukas ... seiner Partnerin ein Buch zum Geburtstag geschenkt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 35,
+    "tr_sentence": "Nazlı tatildeki komşusunun kedisini ...",
+    "tr_option1": "besledi",
+    "tr_option2": "beslemiş",
+    "de_sentence": "Nadine ... die Katze ihres verreisten Nachbarn gefüttert.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 36,
+    "tr_sentence": "Onat kütüphaneden bir kitap ödünç ...",
+    "tr_option1": "aldı",
+    "tr_option2": "almış",
+    "de_sentence": "Otto ... aus der Bibliothek ein Buch ausgeliehen.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 37,
+    "tr_sentence": "Esra işyerinde ilk sunumunu ...",
+    "tr_option1": "yaptı",
+    "tr_option2": "yapmış",
+    "de_sentence": "Elena ... bei der Arbeit ihre erste Präsentation gehalten.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 38,
+    "tr_sentence": "Sinan köpeğini yürüyüşe ...",
+    "tr_option1": "çıkardı",
+    "tr_option2": "çıkarmış",
+    "de_sentence": "Sebastian ... seinen Hund spazieren geführt.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 39,
+    "tr_sentence": "Derin dün akşam kızının ödevini kontrol ...",
+    "tr_option1": "etti",
+    "tr_option2": "etmiş",
+    "de_sentence": "Daniela ... gestern Abend die Hausaufgaben ihrer Tochter kontrolliert.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  },
+  {
+    "id": 40,
+    "tr_sentence": "Musa öğle arasında kendi yemeğini ...",
+    "tr_option1": "getirdi",
+    "tr_option2": "getirmiş",
+    "de_sentence": "Martin ... in der Mittagspause sein eigenes Essen mitgebracht.",
+    "de_option1": "hat",
+    "de_option2": "habe"
+  }
+]

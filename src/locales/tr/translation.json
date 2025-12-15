@@ -1,0 +1,20 @@
+{
+  "welcome": "Hoş geldiniz",
+  "intro": {
+    "study_phase": "Şimdi size arka arkaya cümleler gösterilecek.<br>Lütfen dikkatlice okuyunuz.",
+    "test_phase": "Öğrenme aşaması bitti.<br>Şimdi size bazı sorular soracağız."
+  },
+  "buttons": {
+    "start": "Başla",
+    "continue": "Devam Et",
+    "next": "Sonraki",
+    "start_test": "Testi Başlat",
+    "confirm": "Onayla"
+  },
+  "options": {
+    "new_sentence": "Bu yeni bir cümle"
+  },
+  "feedback": {
+    "completion": "Deney tamamlandı. Teşekkür ederiz."
+  }
+}
