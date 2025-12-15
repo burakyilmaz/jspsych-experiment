@@ -31,8 +31,8 @@ jobs:
       - name: Prepare GitHub Pages content
         run: |
           mkdir pages
-          unzip packaged/linguistic_*.zip -d pages/linguistic
-          unzip packaged/visual_*.zip -d pages/visual
+          unzip packaged/linguistic_*.zip -d pages
+          unzip packaged/visual_*.zip -d pages
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
