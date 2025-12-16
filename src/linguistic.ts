@@ -247,19 +247,7 @@ export async function run({ assetPaths }: RunOptions) {
   });
 
   // ---------------------------------------------------------------------------
-  // Completion
-  // ---------------------------------------------------------------------------
-
-  timeline.push({
-    ...baseTrial,
-    type: HtmlKeyboardResponsePlugin,
-    stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
-    trial_duration: 3000,
-    data: { phase: "completion" },
-  });
-
-  // ---------------------------------------------------------------------------
-  // DataPipe Upload Trial (en son)
+  // DataPipe Upload Trial
   // ---------------------------------------------------------------------------
 
   const subject_id = jsPsych.randomization.randomID(10);
@@ -271,6 +259,18 @@ export async function run({ assetPaths }: RunOptions) {
     experiment_id: "f03fiHSxWknF", // DataPipe Experiment ID
     filename: filename,
     data_string: () => jsPsych.data.get().json(),
+  });
+
+  // ---------------------------------------------------------------------------
+  // Completion
+  // ---------------------------------------------------------------------------
+
+  timeline.push({
+    ...baseTrial,
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
+    choices: "NO_KEYS",
+    data: { phase: "completion" },
   });
 
   // ---------------------------------------------------------------------------
