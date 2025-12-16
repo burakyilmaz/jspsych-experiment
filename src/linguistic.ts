@@ -1,7 +1,7 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 0.9.1
+ * @version 0.9.2
  * @assets assets/
  */
 
@@ -20,10 +20,14 @@ import linguisticData from "../assets/linguistic/data.json";
 
 import { RunOptions, SentenceData, SavedSession } from "src/types/interfaces";
 
+// -----------------------------------------------------------------------------
+// KONFİGÜRASYON SABİTLERİ
+// -----------------------------------------------------------------------------
 const ITEM_COUNT_LEARNING = 4;
 const TEST_OLD_COUNT = 2;
 const TEST_NEW_COUNT = 2;
 const STUDY_SENTENCE_DELAY_MS = 2000;
+const CHECK_PREVIOUS_PARTICIPATION = false;
 
 function shuffleArray<T>(array: T[]): T[] {
   const copy = [...array];
@@ -35,6 +39,7 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 export async function run({ assetPaths }: RunOptions) {
+  // 1. i18n Başlat
   await i18next.init({
     lng: "tr",
     resources: {
@@ -43,6 +48,7 @@ export async function run({ assetPaths }: RunOptions) {
     },
   });
 
+  // 2. jsPsych Root Elementi
   let root = document.getElementById("jspsych-root");
   if (!root) {
     root = document.createElement("div");
@@ -62,7 +68,6 @@ export async function run({ assetPaths }: RunOptions) {
       document.body.classList.remove("dark-mode");
       localStorage.setItem("theme", "light");
     }
-
     const btn = document.querySelector(".theme-toggle-btn");
     if (btn) {
       btn.textContent = isDark ? "☀️" : "🌙";
@@ -101,7 +106,6 @@ export async function run({ assetPaths }: RunOptions) {
     applyTheme(false);
   }
 
-  // 3. jsPsych Başlat
   const jsPsych = initJsPsych({
     display_element: root,
     clear_html_on_finish: true,
@@ -111,25 +115,27 @@ export async function run({ assetPaths }: RunOptions) {
   // GÜVENLİK ADIMI: DAHA ÖNCE KATILDI MI?
   // ---------------------------------------------------------------------------
 
-  if (localStorage.getItem("experiment_status") === "completed") {
-    await jsPsych.run([
-      {
-        type: HtmlKeyboardResponsePlugin,
-        stimulus: `<div style="padding: 20px;">
-                     <p style="font-size: 24px; font-weight: bold; color: #ff5252;">
-                       ⚠️
-                     </p>
-                     <p style="font-size: 20px;">
-                       ${
-                         i18next.t("feedback.already_participated") ||
-                         "Bu çalışmaya daha önce katılım sağladınız."
-                       }
-                     </p>
-                   </div>`,
-        choices: "NO_KEYS",
-      },
-    ]);
-    return jsPsych;
+  if (CHECK_PREVIOUS_PARTICIPATION) {
+    if (localStorage.getItem("experiment_status") === "completed") {
+      await jsPsych.run([
+        {
+          type: HtmlKeyboardResponsePlugin,
+          stimulus: `<div style="padding: 20px;">
+                       <p style="font-size: 24px; font-weight: bold; color: #ff5252;">
+                         ⚠️
+                       </p>
+                       <p style="font-size: 20px;">
+                         ${
+                           i18next.t("feedback.already_participated") ||
+                           "Bu çalışmaya daha önce katılım sağladınız."
+                         }
+                       </p>
+                     </div>`,
+          choices: "NO_KEYS",
+        },
+      ]);
+      return jsPsych;
+    }
   }
 
   // ---------------------------------------------------------------------------
