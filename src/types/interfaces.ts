@@ -1,5 +1,3 @@
-// --- TİP TANIMLAMALARI ---
-// Bu arayüz (Interface) gelen parametrelerin neye benzediğini tanımlar
 interface RunOptions {
   assetPaths: {
     images: string[];
@@ -10,17 +8,23 @@ interface RunOptions {
   environment?: string;
   title?: string;
   version?: string;
-  testType?: 'linguistic' | 'visual';
+  testType?: "linguistic" | "visual";
 }
 
-// linguisticData içindeki nesnelerin yapısını tanımlayabilirsin (İsteğe bağlı ama önerilir)
 interface SentenceData {
   id: number;
   tr_sentence: string;
   tr_option1: string;
   tr_option2: string;
-  shownVersion?: string; // Kod içinde sonradan eklediğimiz alan
-  // Diğer alanlar...
+  shownVersion?: string;
+  item_type?: "old" | "new";
 }
 
-export { RunOptions, SentenceData };
+interface SavedSession {
+  studyStimuli: SentenceData[];
+  testStimuli: SentenceData[];
+  trialIndex: number;
+  trialData: any[];
+}
+
+export { RunOptions, SentenceData, SavedSession };
