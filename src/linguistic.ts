@@ -1,7 +1,7 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 0.5.0
+ * @version 0.9.1
  * @assets assets/
  */
 
@@ -50,26 +50,112 @@ export async function run({ assetPaths }: RunOptions) {
     document.body.appendChild(root);
   }
 
-  // Subject ID
+  // ---------------------------------------------------------------------------
+  // NAVBAR & DARK MODE
+  // ---------------------------------------------------------------------------
+
+  const applyTheme = (isDark: boolean) => {
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("theme", "light");
+    }
+
+    const btn = document.querySelector(".theme-toggle-btn");
+    if (btn) {
+      btn.textContent = isDark ? "☀️" : "🌙";
+    }
+  };
+
+  const createDarkModeNavbar = () => {
+    let existing = document.getElementById("dark-mode-navbar");
+    if (existing) existing.remove();
+
+    const navbar = document.createElement("div");
+    navbar.id = "dark-mode-navbar";
+
+    const button = document.createElement("button");
+    button.className = "theme-toggle-btn";
+
+    button.addEventListener("click", () => {
+      const isCurrentlyDark = document.body.classList.contains("dark-mode");
+      applyTheme(!isCurrentlyDark);
+    });
+
+    navbar.appendChild(button);
+    document.body.appendChild(navbar);
+  };
+
+  createDarkModeNavbar();
+
+  const savedTheme = localStorage.getItem("theme");
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
+    applyTheme(true);
+  } else {
+    applyTheme(false);
+  }
+
+  // 3. jsPsych Başlat
+  const jsPsych = initJsPsych({
+    display_element: root,
+    clear_html_on_finish: true,
+  });
+
+  // ---------------------------------------------------------------------------
+  // GÜVENLİK ADIMI: DAHA ÖNCE KATILDI MI?
+  // ---------------------------------------------------------------------------
+
+  if (localStorage.getItem("experiment_status") === "completed") {
+    await jsPsych.run([
+      {
+        type: HtmlKeyboardResponsePlugin,
+        stimulus: `<div style="padding: 20px;">
+                     <p style="font-size: 24px; font-weight: bold; color: #ff5252;">
+                       ⚠️
+                     </p>
+                     <p style="font-size: 20px;">
+                       ${
+                         i18next.t("feedback.already_participated") ||
+                         "Bu çalışmaya daha önce katılım sağladınız."
+                       }
+                     </p>
+                   </div>`,
+        choices: "NO_KEYS",
+      },
+    ]);
+    return jsPsych;
+  }
+
+  // ---------------------------------------------------------------------------
+  // SESSION & SUBJECT ID
+  // ---------------------------------------------------------------------------
+
   let subject_id = localStorage.getItem("subject_id");
   if (!subject_id) {
     subject_id = Math.random().toString(36).substring(2, 12);
     localStorage.setItem("subject_id", subject_id);
   }
 
-  // Check saved session
   const savedRaw = localStorage.getItem(`jspsych_resume_${subject_id}`);
   let savedSession: SavedSession | null = savedRaw
     ? JSON.parse(savedRaw)
     : null;
 
-  // Prepare stimuli
+  // ---------------------------------------------------------------------------
+  // STIMULI HAZIRLIĞI
+  // ---------------------------------------------------------------------------
+
   let learningPhaseStimuli: SentenceData[];
   let unseenStimuli: SentenceData[];
   let testPhaseStimuli: SentenceData[];
 
   if (savedSession) {
-    // Use saved stimuli to preserve order
     learningPhaseStimuli = savedSession.studyStimuli;
     testPhaseStimuli = savedSession.testStimuli;
   } else {
@@ -92,11 +178,10 @@ export async function run({ assetPaths }: RunOptions) {
     const testNewItems = shuffleArray(unseenStimuli).slice(0, TEST_NEW_COUNT);
     testPhaseStimuli = shuffleArray([...testOldItems, ...testNewItems]);
 
-    // Initialize savedSession
     savedSession = {
       studyStimuli: learningPhaseStimuli,
       testStimuli: testPhaseStimuli,
-      trialIndex: -1, // start before first trial
+      trialIndex: -1,
       trialData: [],
     };
     localStorage.setItem(
@@ -105,11 +190,6 @@ export async function run({ assetPaths }: RunOptions) {
     );
   }
 
-  const jsPsych = initJsPsych({
-    display_element: root,
-    clear_html_on_finish: true,
-  });
-
   const clearScreen = () => {
     const el = jsPsych.getDisplayElement();
     if (el) el.innerHTML = "";
@@ -117,7 +197,7 @@ export async function run({ assetPaths }: RunOptions) {
   const baseTrial = { on_start: clearScreen };
   const timeline: any[] = [];
 
-  // Preload
+  // 1. Preload
   timeline.push({
     ...baseTrial,
     type: PreloadPlugin,
@@ -126,7 +206,7 @@ export async function run({ assetPaths }: RunOptions) {
     video: assetPaths.video,
   });
 
-  // Welcome
+  // 2. Welcome
   const welcomeIndex = 0;
   if (savedSession.trialIndex < welcomeIndex) {
     timeline.push({
@@ -146,7 +226,7 @@ export async function run({ assetPaths }: RunOptions) {
     });
   }
 
-  // Study intro
+  // 3. Study Intro
   const studyIntroIndex = 1;
   if (savedSession.trialIndex < studyIntroIndex) {
     timeline.push({
@@ -166,10 +246,10 @@ export async function run({ assetPaths }: RunOptions) {
     });
   }
 
-  // Study items
+  // 4. Study Phase
   learningPhaseStimuli.forEach((item, index) => {
     const trialIndexGlobal = studyIntroIndex + 1 + index;
-    if (savedSession.trialIndex >= trialIndexGlobal) return; // skip already done
+    if (savedSession.trialIndex >= trialIndexGlobal) return;
 
     timeline.push({
       ...baseTrial,
@@ -192,7 +272,7 @@ export async function run({ assetPaths }: RunOptions) {
     });
   });
 
-  // Test intro
+  // 5. Test Intro
   const testIntroIndex = studyIntroIndex + learningPhaseStimuli.length + 1;
   if (savedSession.trialIndex < testIntroIndex) {
     timeline.push({
@@ -212,10 +292,10 @@ export async function run({ assetPaths }: RunOptions) {
     });
   }
 
-  // Test items
+  // 6. Test Phase
   testPhaseStimuli.forEach((item, index) => {
     const trialIndexGlobal = testIntroIndex + 1 + index;
-    if (savedSession.trialIndex >= trialIndexGlobal) return; // skip already done
+    if (savedSession.trialIndex >= trialIndexGlobal) return;
 
     timeline.push({
       ...baseTrial,
@@ -263,17 +343,30 @@ export async function run({ assetPaths }: RunOptions) {
     });
   });
 
-  // DataPipe Upload
+  // 7. DataPipe Upload
   timeline.push({
     type: jsPsychPipe,
     action: "save",
     experiment_id: "f03fiHSxWknF",
     filename: `${subject_id}.json`,
     data_string: () => jsPsych.data.get().json(),
-    saving_message: () => i18next.t("feedback.saving_data"),
+    on_load: () => {
+      const displayEl = jsPsych.getDisplayElement();
+      displayEl.innerHTML = `
+        <div style="text-align: center;">
+          <p style="font-size: 1.2rem; margin-bottom: 20px;">
+            ${i18next.t("feedback.saving_data")}
+          </p>
+          <div class="spinner"></div>
+        </div>
+      `;
+    },
+    on_finish: () => {
+      localStorage.setItem("experiment_status", "completed");
+    },
   });
 
-  // Completion
+  // 8. Completion
   const completionIndex = testIntroIndex + testPhaseStimuli.length + 1;
   if (savedSession.trialIndex < completionIndex) {
     timeline.push({
@@ -282,7 +375,10 @@ export async function run({ assetPaths }: RunOptions) {
       stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
       choices: "NO_KEYS",
       data: { phase: "completion" },
-      on_start: () => localStorage.removeItem(`jspsych_resume_${subject_id}`),
+      on_start: () => {
+        localStorage.removeItem(`jspsych_resume_${subject_id}`);
+        localStorage.setItem("experiment_status", "completed");
+      },
     });
   }
 

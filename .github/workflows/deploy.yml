@@ -2,7 +2,7 @@ name: Deploy jsPsych to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
@@ -31,8 +31,12 @@ jobs:
       - name: Prepare GitHub Pages content
         run: |
           mkdir pages
-          unzip packaged/linguistic_*.zip -d pages
-          unzip packaged/visual_*.zip -d pages
+          # Linguistic: en son versiyon dosyayı al
+          LATEST_LINGUISTIC=$(ls packaged/linguistic_*.zip | sort -V | tail -n 1)
+          unzip "$LATEST_LINGUISTIC" -d pages
+          # Visual: en son versiyon dosyayı al
+          LATEST_VISUAL=$(ls packaged/visual_*.zip | sort -V | tail -n 1)
+          unzip "$LATEST_VISUAL" -d pages
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

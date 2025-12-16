@@ -15,6 +15,7 @@
     "new_sentence": "Bu yeni bir cümle"
   },
   "feedback": {
+    "already_participated": "Bu çalışmaya daha önce katılım sağladınız. Tekrar katılamazsınız.",
     "completion": "Deney tamamlandı. Teşekkür ederiz.",
     "saving_data": "Veriler kaydediliyor. Lütfen bu sayfayı kapatmayın."
   }

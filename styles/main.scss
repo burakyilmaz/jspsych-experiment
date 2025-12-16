@@ -1,5 +1,154 @@
 @import "~jspsych/css/jspsych.css";
 
+// Anket sorularındaki yıldız işaretini gizle (Görüntü kirliliğini önler)
 .jspsych-survey-multi-choice-question .required {
   display: none;
+}
+
+// --- GLOBAL LAYOUT ---
+body {
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+
+  // ÖNEMLİ: Navbar fixed olduğu için içeriği aşağı itiyoruz.
+  // Bu sayede "Hoşgeldiniz" yazısı navbarın altında kalmaz.
+  padding-top: 60px !important;
+}
+
+// --- NAVBAR STYLES ---
+#dark-mode-navbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%; // Mobilde yanlış tıklamaları önlemek için tam genişlik
+  height: 50px;
+  display: flex;
+  justify-content: flex-end; // Butonu en sağa yasla
+  align-items: center;
+  padding: 0 15px;
+  z-index: 9999;
+  box-sizing: border-box;
+
+  // İçerik kayarken altta kalırsa okunabilsin diye buzlu cam efekti
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+// --- TOGGLE BUTTON (YUVARLAK & TEK İKON) ---
+.theme-toggle-btn {
+  background: transparent;
+  color: #333;
+  border: 1px solid #ccc;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+
+  // MERKEZLEME AYARLARI (GÜNCEL)
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0; // Varsayılan buton padding'ini sıfırla
+  line-height: 1; // Satır boşluğunu sıfırla (Bunu yapmazsak aşağı kayar)
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: rotate(15deg);
+    border-color: #999;
+  }
+}
+
+// --- LOADING SPINNER ---
+.spinner {
+  margin: 20px auto;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3; // Pasif renk
+  border-top: 4px solid #3498db; // Aktif renk (Light mode: Mavi)
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// --- DARK MODE THEME ---
+body.dark-mode {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+
+  // Navbar arka planı koyulaşsın
+  #dark-mode-navbar {
+    background-color: #1a1a1a !important;
+  }
+
+  // Buton rengi sarı (Güneş için)
+  .theme-toggle-btn {
+    color: #ffd700;
+    border-color: #666;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // Spinner rengi sarı olsun
+  .spinner {
+    border-color: #444;
+    border-top-color: #ffd700;
+  }
+
+  // jsPsych butonları
+  .jspsych-btn {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+
+    &:hover {
+      background-color: #555;
+    }
+  }
+
+  // Cümle kutuları
+  .sentence-container {
+    border-color: #444;
+    color: #fff;
+  }
+
+  // Input alanları
+  input[type="text"],
+  textarea {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+  }
+}
+
+// --- MOBILE RESPONSIVENESS ---
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  #dark-mode-navbar {
+    height: 40px;
+  }
+
+  body {
+    padding-top: 45px !important;
+  }
 }

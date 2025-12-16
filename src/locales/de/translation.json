@@ -15,6 +15,7 @@
     "new_sentence": "Das ist ein neuer Satz"
   },
   "feedback": {
+    "already_participated": "Sie haben bereits an dieser Studie teilgenommen. Eine erneute Teilnahme ist nicht möglich.",
     "completion": "Das Experiment ist abgeschlossen. Vielen Dank.",
     "saving_data": "Daten werden gespeichert. Bitte schließen Sie diese Seite nicht."
   }
