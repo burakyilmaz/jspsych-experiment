@@ -270,7 +270,7 @@ export async function run({ assetPaths }: RunOptions) {
     experiment_id: "f03fiHSxWknF",
     filename: `${subject_id}.json`,
     data_string: () => jsPsych.data.get().json(),
-    saving_message: i18next.t("feedback.saving_data"),
+    saving_message: () => i18next.t("feedback.saving_data"),
   });
 
   // Completion
