@@ -1,6 +1,6 @@
 /**
  * @title Linguistic Test Experiment
- * @description Tez çalışması için geliştirilen dilsel deney uygulaması (i18n Entegreli)
+ * @description Tez çalışması için geliştirilen dilsel deney uygulaması
  * @version 0.1.0
  * @assets assets/
  */
@@ -234,14 +234,14 @@ export async function run({ assetPaths }: RunOptions) {
         const correct = data.correct_response;
 
         data.is_correct = given === correct;
-
-        if (data.item_type === "old") {
-          data.response_type = data.is_correct ? "hit" : "miss";
-        } else {
-          data.response_type = data.is_correct
+        data.response_type =
+          data.item_type === "old"
+            ? data.is_correct
+              ? "hit"
+              : "miss"
+            : data.is_correct
             ? "correct_rejection"
             : "false_alarm";
-        }
       },
     });
   });
@@ -256,9 +256,10 @@ export async function run({ assetPaths }: RunOptions) {
   timeline.push({
     type: jsPsychPipe,
     action: "save",
-    experiment_id: "f03fiHSxWknF", // DataPipe Experiment ID
+    experiment_id: "f03fiHSxWknF",
     filename: filename,
     data_string: () => jsPsych.data.get().json(),
+    saving_message: i18next.t("feedback.saving_data"),
   });
 
   // ---------------------------------------------------------------------------

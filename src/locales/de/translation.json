@@ -15,6 +15,7 @@
     "new_sentence": "Das ist ein neuer Satz"
   },
   "feedback": {
-    "completion": "Das Experiment ist abgeschlossen. Vielen Dank."
+    "completion": "Das Experiment ist abgeschlossen. Vielen Dank.",
+    "saving_data": "Daten werden gespeichert. Bitte schließen Sie diese Seite nicht."
   }
 }
