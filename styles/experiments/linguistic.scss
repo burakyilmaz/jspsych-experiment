@@ -1,0 +1,38 @@
+/* src/styles/experiments/linguistic.scss */
+
+// Cümle kutusu stilleri
+.sentence-container {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  
+  /* GENİŞLİK AYARI */
+  width: 100%;            /* Parent ne kadarsa o kadar ol */
+  max-width: 100%;        /* Asla parent'tan taşma */
+  box-sizing: border-box; /* Padding ekleyince genişlik şişmesin */
+  
+  margin-bottom: 0;       /* Boşluğu main.scss'deki buton grubuna verdik */
+  transition: background-color 0.3s, color 0.3s;
+
+  .study-sentence, .test-prompt {
+    font-size: 24px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+  }
+}
+
+// Dark Mode Overrides for Linguistic
+body.dark-mode {
+  .sentence-container {
+    background-color: #2d2d2d; // Kutu rengi koyu
+    border: 1px solid #444;
+    box-shadow: none;
+
+    .study-sentence, .test-prompt {
+      color: #fff; // Yazı rengi beyaz
+    }
+  }
+}

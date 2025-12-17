@@ -1,20 +1,18 @@
+/* src/styles/main.scss */
 @import "~jspsych/css/jspsych.css";
 
-// Anket sorularındaki yıldız işaretini gizle (Görüntü kirliliğini önler)
-.jspsych-survey-multi-choice-question .required {
-  display: none;
-}
-
-// --- GLOBAL LAYOUT ---
+// --- GLOBAL AYARLAR ---
 body {
   background-color: #ffffff;
   color: #000000;
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
+  padding-top: 60px !important; // Navbar boşluğu
+}
 
-  // ÖNEMLİ: Navbar fixed olduğu için içeriği aşağı itiyoruz.
-  // Bu sayede "Hoşgeldiniz" yazısı navbarın altında kalmaz.
-  padding-top: 60px !important;
+// Anket sorularındaki yıldızı gizle
+.jspsych-survey-multi-choice-question .required {
+  display: none;
 }
 
 // --- NAVBAR STYLES ---
@@ -22,21 +20,19 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  width: 100%; // Mobilde yanlış tıklamaları önlemek için tam genişlik
+  width: 100%;
   height: 50px;
   display: flex;
-  justify-content: flex-end; // Butonu en sağa yasla
+  justify-content: flex-end;
   align-items: center;
   padding: 0 15px;
   z-index: 9999;
-  box-sizing: border-box;
-
-  // İçerik kayarken altta kalırsa okunabilsin diye buzlu cam efekti
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(5px);
+  box-sizing: border-box;
 }
 
-// --- TOGGLE BUTTON (YUVARLAK & TEK İKON) ---
+// --- TOGGLE BUTTON ---
 .theme-toggle-btn {
   background: transparent;
   color: #333;
@@ -46,15 +42,11 @@ body {
   border-radius: 50%;
   cursor: pointer;
   font-size: 20px;
-
-  // MERKEZLEME AYARLARI (GÜNCEL)
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 0; // Varsayılan buton padding'ini sıfırla
-  line-height: 1; // Satır boşluğunu sıfırla (Bunu yapmazsak aşağı kayar)
-
+  padding: 0;
+  line-height: 1;
   transition: all 0.3s ease;
 
   &:hover {
@@ -69,86 +61,75 @@ body {
   margin: 20px auto;
   width: 40px;
   height: 40px;
-  border: 4px solid #f3f3f3; // Pasif renk
-  border-top: 4px solid #3498db; // Aktif renk (Light mode: Mavi)
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-// --- DARK MODE THEME ---
+// --- DARK MODE THEME (GLOBAL) ---
 body.dark-mode {
   background-color: #1a1a1a !important;
   color: #e0e0e0 !important;
 
-  // Navbar arka planı koyulaşsın
   #dark-mode-navbar {
     background-color: #1a1a1a !important;
   }
 
-  // Buton rengi sarı (Güneş için)
   .theme-toggle-btn {
     color: #ffd700;
     border-color: #666;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
+    &:hover { background: rgba(255, 255, 255, 0.1); }
   }
 
-  // Spinner rengi sarı olsun
   .spinner {
     border-color: #444;
     border-top-color: #ffd700;
   }
 
-  // jsPsych butonları
   .jspsych-btn {
     background-color: #333;
     color: #fff;
     border-color: #555;
-
-    &:hover {
-      background-color: #555;
-    }
+    &:hover { background-color: #555; }
   }
 
-  // Cümle kutuları
-  .sentence-container {
-    border-color: #444;
-    color: #fff;
-  }
-
-  // Input alanları
-  input[type="text"],
-  textarea {
+  input[type="text"], textarea {
     background-color: #333;
     color: #fff;
     border: 1px solid #555;
   }
 }
 
+/* 2. İÇERİK KUTUSU (jspsych-content) */
+.jspsych-content {
+  max-width: 800px; 
+  width: 90%;       
+  margin: 0 auto;   
+  
+  /* BU KISIM KRİTİK: Her şeyi hizaya sokan kodlar */
+  display: flex;
+  flex-direction: column; /* Alt alta diz */
+  align-items: center;    /* Yatayda tam ortala */
+  justify-content: flex-start;
+}
+
+/* jsPsych'in kendi buton grubu kapsayıcısını da hizalayalım */
+#jspsych-html-button-response-btngroup {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Butonu grubun içinde ortala */
+  margin-top: 20px;        /* Kutu ile buton arası mesafe */
+}
+
 // --- MOBILE RESPONSIVENESS ---
 @media (max-width: 600px) {
-  .theme-toggle-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-  }
-
-  #dark-mode-navbar {
-    height: 40px;
-  }
-
-  body {
-    padding-top: 45px !important;
-  }
+  .theme-toggle-btn { width: 32px; height: 32px; font-size: 16px; }
+  #dark-mode-navbar { height: 40px; }
+  body { padding-top: 45px !important; }
 }

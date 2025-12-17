@@ -1,18 +1,20 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 0.9.2
- * @assets assets/
+ * @version 0.9.4
  */
 
 import "../styles/main.scss";
+import "../styles/experiments/linguistic.scss";
+
 import i18next from "i18next";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
 import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import PreloadPlugin from "@jspsych/plugin-preload";
 import SurveyMultiChoicePlugin from "@jspsych/plugin-survey-multi-choice";
-import { initJsPsych } from "jspsych";
 import jsPsychPipe from "@jspsych-contrib/plugin-pipe";
+
+import { setupExperiment } from "./utils/startup";
 
 import trTranslations from "../src/locales/tr/translation.json";
 import deTranslations from "../src/locales/de/translation.json";
@@ -21,7 +23,7 @@ import linguisticData from "../assets/linguistic/data.json";
 import { RunOptions, SentenceData, SavedSession } from "src/types/interfaces";
 
 // -----------------------------------------------------------------------------
-// KONFİGÜRASYON SABİTLERİ
+// CONSTANTS
 // -----------------------------------------------------------------------------
 const ITEM_COUNT_LEARNING = 4;
 const TEST_OLD_COUNT = 2;
@@ -29,6 +31,9 @@ const TEST_NEW_COUNT = 2;
 const STUDY_SENTENCE_DELAY_MS = 2000;
 const CHECK_PREVIOUS_PARTICIPATION = false;
 
+// -----------------------------------------------------------------------------
+// HELPERS
+// -----------------------------------------------------------------------------
 function shuffleArray<T>(array: T[]): T[] {
   const copy = [...array];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -38,99 +43,30 @@ function shuffleArray<T>(array: T[]): T[] {
   return copy;
 }
 
+function currentLang(): "tr" | "de" {
+  return i18next.language.startsWith("de") ? "de" : "tr";
+}
+
+// -----------------------------------------------------------------------------
+// MAIN
+// -----------------------------------------------------------------------------
 export async function run({ assetPaths }: RunOptions) {
-  // 1. i18n Başlat
-  await i18next.init({
-    lng: "tr",
-    resources: {
-      tr: { translation: trTranslations },
-      de: { translation: deTranslations },
-    },
+  const { jsPsych } = await setupExperiment({
+    trResources: trTranslations,
+    deResources: deTranslations,
   });
 
-  // 2. jsPsych Root Elementi
-  let root = document.getElementById("jspsych-root");
-  if (!root) {
-    root = document.createElement("div");
-    root.id = "jspsych-root";
-    document.body.appendChild(root);
-  }
+  const lang = currentLang();
 
   // ---------------------------------------------------------------------------
-  // NAVBAR & DARK MODE
+  // PARTICIPATION CHECK
   // ---------------------------------------------------------------------------
-
-  const applyTheme = (isDark: boolean) => {
-    if (isDark) {
-      document.body.classList.add("dark-mode");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.body.classList.remove("dark-mode");
-      localStorage.setItem("theme", "light");
-    }
-    const btn = document.querySelector(".theme-toggle-btn");
-    if (btn) {
-      btn.textContent = isDark ? "☀️" : "🌙";
-    }
-  };
-
-  const createDarkModeNavbar = () => {
-    let existing = document.getElementById("dark-mode-navbar");
-    if (existing) existing.remove();
-
-    const navbar = document.createElement("div");
-    navbar.id = "dark-mode-navbar";
-
-    const button = document.createElement("button");
-    button.className = "theme-toggle-btn";
-
-    button.addEventListener("click", () => {
-      const isCurrentlyDark = document.body.classList.contains("dark-mode");
-      applyTheme(!isCurrentlyDark);
-    });
-
-    navbar.appendChild(button);
-    document.body.appendChild(navbar);
-  };
-
-  createDarkModeNavbar();
-
-  const savedTheme = localStorage.getItem("theme");
-  const systemPrefersDark = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
-
-  if (savedTheme === "dark" || (!savedTheme && systemPrefersDark)) {
-    applyTheme(true);
-  } else {
-    applyTheme(false);
-  }
-
-  const jsPsych = initJsPsych({
-    display_element: root,
-    clear_html_on_finish: true,
-  });
-
-  // ---------------------------------------------------------------------------
-  // GÜVENLİK ADIMI: DAHA ÖNCE KATILDI MI?
-  // ---------------------------------------------------------------------------
-
   if (CHECK_PREVIOUS_PARTICIPATION) {
-    if (localStorage.getItem("experiment_status") === "completed") {
+    if (localStorage.getItem("experiment_status_ling") === "completed") {
       await jsPsych.run([
         {
           type: HtmlKeyboardResponsePlugin,
-          stimulus: `<div style="padding: 20px;">
-                       <p style="font-size: 24px; font-weight: bold; color: #ff5252;">
-                         ⚠️
-                       </p>
-                       <p style="font-size: 20px;">
-                         ${
-                           i18next.t("feedback.already_participated") ||
-                           "Bu çalışmaya daha önce katılım sağladınız."
-                         }
-                       </p>
-                     </div>`,
+          stimulus: `<p>${i18next.t("feedback.already_participated")}</p>`,
           choices: "NO_KEYS",
         },
       ]);
@@ -139,49 +75,69 @@ export async function run({ assetPaths }: RunOptions) {
   }
 
   // ---------------------------------------------------------------------------
-  // SESSION & SUBJECT ID
+  // SUBJECT & SESSION
   // ---------------------------------------------------------------------------
-
   let subject_id = localStorage.getItem("subject_id");
   if (!subject_id) {
     subject_id = Math.random().toString(36).substring(2, 12);
     localStorage.setItem("subject_id", subject_id);
   }
 
-  const savedRaw = localStorage.getItem(`jspsych_resume_${subject_id}`);
+  const SESSION_KEY = `jspsych_resume_ling_${subject_id}`;
+  const savedRaw = localStorage.getItem(SESSION_KEY);
   let savedSession: SavedSession | null = savedRaw
     ? JSON.parse(savedRaw)
     : null;
 
-  // ---------------------------------------------------------------------------
-  // STIMULI HAZIRLIĞI
-  // ---------------------------------------------------------------------------
-
   let learningPhaseStimuli: SentenceData[];
-  let unseenStimuli: SentenceData[];
   let testPhaseStimuli: SentenceData[];
 
   if (savedSession) {
     learningPhaseStimuli = savedSession.studyStimuli;
     testPhaseStimuli = savedSession.testStimuli;
   } else {
-    const allStimuli = shuffleArray(linguisticData as SentenceData[]);
+    const allStimuli: SentenceData[] = shuffleArray(
+      (linguisticData as any[]).map((item) => ({
+        id: item.id,
+        sentence: {
+          tr: item.tr_sentence,
+          de: item.de_sentence,
+        },
+        option1: {
+          tr: item.tr_option1,
+          de: item.de_option1,
+        },
+        option2: {
+          tr: item.tr_option2,
+          de: item.de_option2,
+        },
+      }))
+    );
+
     learningPhaseStimuli = allStimuli
       .slice(0, ITEM_COUNT_LEARNING)
-      .map((item) => ({
-        ...item,
-        item_type: "old",
-        shownVersion: Math.random() < 0.5 ? item.tr_option1 : item.tr_option2,
-      }));
-    unseenStimuli = allStimuli.slice(ITEM_COUNT_LEARNING).map((item) => ({
+      .map((item) => {
+        const shown =
+          Math.random() < 0.5 ? item.option1[lang] : item.option2[lang];
+
+        return {
+          ...item,
+          item_type: "old" as const,
+          shownVersion: shown,
+        };
+      });
+
+    const unseenStimuli = allStimuli.slice(ITEM_COUNT_LEARNING).map((item) => ({
       ...item,
-      item_type: "new",
+      item_type: "new" as const,
     }));
+
     const testOldItems = shuffleArray(learningPhaseStimuli).slice(
       0,
       TEST_OLD_COUNT
     );
     const testNewItems = shuffleArray(unseenStimuli).slice(0, TEST_NEW_COUNT);
+
     testPhaseStimuli = shuffleArray([...testOldItems, ...testNewItems]);
 
     savedSession = {
@@ -190,20 +146,23 @@ export async function run({ assetPaths }: RunOptions) {
       trialIndex: -1,
       trialData: [],
     };
-    localStorage.setItem(
-      `jspsych_resume_${subject_id}`,
-      JSON.stringify(savedSession)
-    );
+
+    localStorage.setItem(SESSION_KEY, JSON.stringify(savedSession));
   }
 
-  const clearScreen = () => {
-    const el = jsPsych.getDisplayElement();
-    if (el) el.innerHTML = "";
-  };
-  const baseTrial = { on_start: clearScreen };
   const timeline: any[] = [];
+  const clearScreen = () => (jsPsych.getDisplayElement().innerHTML = "");
+  const baseTrial = { on_start: clearScreen };
 
-  // 1. Preload
+  const updateSession = (idx: number, data: any) => {
+    savedSession!.trialIndex = idx;
+    savedSession!.trialData.push(data);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(savedSession));
+  };
+
+  // ---------------------------------------------------------------------------
+  // TIMELINE
+  // ---------------------------------------------------------------------------
   timeline.push({
     ...baseTrial,
     type: PreloadPlugin,
@@ -212,144 +171,107 @@ export async function run({ assetPaths }: RunOptions) {
     video: assetPaths.video,
   });
 
-  // 2. Welcome
-  const welcomeIndex = 0;
-  if (savedSession.trialIndex < welcomeIndex) {
+  let idx = 0;
+
+  // Welcome
+  if (savedSession.trialIndex < idx) {
     timeline.push({
       ...baseTrial,
       type: HtmlButtonResponsePlugin,
       stimulus: `<p>${i18next.t("welcome")}</p>`,
       choices: [i18next.t("buttons.start")],
-      data: { phase: "welcome" },
-      on_finish: (data: any) => {
-        savedSession!.trialIndex = welcomeIndex;
-        savedSession!.trialData.push(data);
-        localStorage.setItem(
-          `jspsych_resume_${subject_id}`,
-          JSON.stringify(savedSession)
-        );
-      },
+      on_finish: (d) => updateSession(idx, d),
     });
   }
+  idx++;
 
-  // 3. Study Intro
-  const studyIntroIndex = 1;
-  if (savedSession.trialIndex < studyIntroIndex) {
+  // Study Intro
+  if (savedSession.trialIndex < idx) {
     timeline.push({
       ...baseTrial,
       type: HtmlButtonResponsePlugin,
       stimulus: `<p>${i18next.t("intro.study_phase")}</p>`,
       choices: [i18next.t("buttons.continue")],
-      data: { phase: "study_intro" },
-      on_finish: (data: any) => {
-        savedSession!.trialIndex = studyIntroIndex;
-        savedSession!.trialData.push(data);
-        localStorage.setItem(
-          `jspsych_resume_${subject_id}`,
-          JSON.stringify(savedSession)
-        );
-      },
+      on_finish: (d) => updateSession(idx, d),
     });
   }
+  idx++;
 
-  // 4. Study Phase
-  learningPhaseStimuli.forEach((item, index) => {
-    const trialIndexGlobal = studyIntroIndex + 1 + index;
-    if (savedSession.trialIndex >= trialIndexGlobal) return;
+  // Study Phase
+  learningPhaseStimuli.forEach((item, i) => {
+    const currentIdx = idx + i;
+    if (savedSession!.trialIndex >= currentIdx) return;
 
     timeline.push({
       ...baseTrial,
       type: HtmlButtonResponsePlugin,
-      stimulus: `<div class="sentence-container"><p class="study-sentence">${item.tr_sentence.replace(
-        "...",
-        item.shownVersion!
-      )}</p></div>`,
+      stimulus: `
+        <div class="sentence-container">
+          <p class="study-sentence">
+            ${item.sentence[lang].replace("...", item.shownVersion!)}
+          </p>
+        </div>
+      `,
       choices: [i18next.t("buttons.next")],
       enable_button_after: STUDY_SENTENCE_DELAY_MS,
-      data: { phase: "study", item_id: item.id, item_index: index },
-      on_finish: (data: any) => {
-        savedSession!.trialIndex = trialIndexGlobal;
-        savedSession!.trialData.push(data);
-        localStorage.setItem(
-          `jspsych_resume_${subject_id}`,
-          JSON.stringify(savedSession)
-        );
-      },
+      on_finish: (d) => updateSession(currentIdx, d),
     });
   });
 
-  // 5. Test Intro
-  const testIntroIndex = studyIntroIndex + learningPhaseStimuli.length + 1;
-  if (savedSession.trialIndex < testIntroIndex) {
+  idx += learningPhaseStimuli.length;
+
+  // Test Intro
+  if (savedSession.trialIndex < idx) {
     timeline.push({
       ...baseTrial,
       type: HtmlButtonResponsePlugin,
       stimulus: `<p>${i18next.t("intro.test_phase")}</p>`,
       choices: [i18next.t("buttons.start_test")],
-      data: { phase: "test_intro" },
-      on_finish: (data: any) => {
-        savedSession!.trialIndex = testIntroIndex;
-        savedSession!.trialData.push(data);
-        localStorage.setItem(
-          `jspsych_resume_${subject_id}`,
-          JSON.stringify(savedSession)
-        );
-      },
+      on_finish: (d) => updateSession(idx, d),
     });
   }
+  idx++;
 
-  // 6. Test Phase
-  testPhaseStimuli.forEach((item, index) => {
-    const trialIndexGlobal = testIntroIndex + 1 + index;
-    if (savedSession.trialIndex >= trialIndexGlobal) return;
+  // Test Phase
+  testPhaseStimuli.forEach((item, i) => {
+    const currentIdx = idx + i;
+    if (savedSession!.trialIndex >= currentIdx) return;
 
     timeline.push({
       ...baseTrial,
       type: SurveyMultiChoicePlugin,
       questions: [
         {
-          prompt: `<p>${item.tr_sentence.replace("...", "_______")}</p>`,
+          prompt: `
+            <div class="sentence-container">
+              <p class="test-prompt">
+                ${item.sentence[lang].replace("...", "_______")}
+              </p>
+            </div>
+          `,
           options: [
-            item.tr_option1,
-            item.tr_option2,
+            item.option1[lang],
+            item.option2[lang],
             i18next.t("options.new_sentence"),
           ],
           required: true,
         },
       ],
       button_label: i18next.t("buttons.confirm"),
-      data: {
-        phase: "test",
-        item_id: item.id,
-        item_index: index,
-        item_type: item.item_type,
-      },
-      on_finish: (data: any) => {
-        data.is_correct =
-          data.response?.Q0 ===
+      on_finish: (d) => {
+        d.is_correct =
+          d.response?.Q0 ===
           (item.item_type === "old"
             ? item.shownVersion
             : i18next.t("options.new_sentence"));
-        data.response_type =
-          item.item_type === "old"
-            ? data.is_correct
-              ? "hit"
-              : "miss"
-            : data.is_correct
-            ? "correct_rejection"
-            : "false_alarm";
-
-        savedSession!.trialIndex = trialIndexGlobal;
-        savedSession!.trialData.push(data);
-        localStorage.setItem(
-          `jspsych_resume_${subject_id}`,
-          JSON.stringify(savedSession)
-        );
+        updateSession(currentIdx, d);
       },
     });
   });
 
-  // 7. DataPipe Upload
+  // ---------------------------------------------------------------------------
+  // SAVE (Translated + Spinner)
+  // ---------------------------------------------------------------------------
   timeline.push({
     type: jsPsychPipe,
     action: "save",
@@ -357,38 +279,29 @@ export async function run({ assetPaths }: RunOptions) {
     filename: `${subject_id}.json`,
     data_string: () => jsPsych.data.get().json(),
     on_load: () => {
-      const displayEl = jsPsych.getDisplayElement();
-      displayEl.innerHTML = `
-        <div style="text-align: center;">
-          <p style="font-size: 1.2rem; margin-bottom: 20px;">
-            ${i18next.t("feedback.saving_data")}
-          </p>
+      jsPsych.getDisplayElement().innerHTML = `
+        <div style="text-align:center">
+          <p>${i18next.t("feedback.saving_data")}</p>
           <div class="spinner"></div>
         </div>
       `;
     },
     on_finish: () => {
-      localStorage.setItem("experiment_status", "completed");
+      localStorage.setItem("experiment_status_ling", "completed");
     },
   });
 
-  // 8. Completion
-  const completionIndex = testIntroIndex + testPhaseStimuli.length + 1;
-  if (savedSession.trialIndex < completionIndex) {
-    timeline.push({
-      ...baseTrial,
-      type: HtmlKeyboardResponsePlugin,
-      stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
-      choices: "NO_KEYS",
-      data: { phase: "completion" },
-      on_start: () => {
-        localStorage.removeItem(`jspsych_resume_${subject_id}`);
-        localStorage.setItem("experiment_status", "completed");
-      },
-    });
-  }
+  // Completion
+  timeline.push({
+    ...baseTrial,
+    type: HtmlKeyboardResponsePlugin,
+    stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
+    choices: "NO_KEYS",
+    on_start: () => {
+      localStorage.removeItem(SESSION_KEY);
+    },
+  });
 
   await jsPsych.run(timeline);
-
   return jsPsych;
 }

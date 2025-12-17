@@ -13,9 +13,9 @@ interface RunOptions {
 
 interface SentenceData {
   id: number;
-  tr_sentence: string;
-  tr_option1: string;
-  tr_option2: string;
+  sentence: { tr: string; de: string };
+  option1: { tr: string; de: string };
+  option2: { tr: string; de: string };
   shownVersion?: string;
   item_type?: "old" | "new";
 }
