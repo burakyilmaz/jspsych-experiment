@@ -1,6 +1,31 @@
 /* src/styles/main.scss */
 @import "~jspsych/css/jspsych.css";
 
+.global-error-boundary {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.global-error-content {
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.global-error-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.global-error-content p {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
 // --- GLOBAL AYARLAR ---
 body {
   background-color: #ffffff;
@@ -68,8 +93,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // --- DARK MODE THEME (GLOBAL) ---
@@ -84,7 +113,9 @@ body.dark-mode {
   .theme-toggle-btn {
     color: #ffd700;
     border-color: #666;
-    &:hover { background: rgba(255, 255, 255, 0.1); }
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
 
   .spinner {
@@ -96,10 +127,13 @@ body.dark-mode {
     background-color: #333;
     color: #fff;
     border-color: #555;
-    &:hover { background-color: #555; }
+    &:hover {
+      background-color: #555;
+    }
   }
 
-  input[type="text"], textarea {
+  input[type="text"],
+  textarea {
     background-color: #333;
     color: #fff;
     border: 1px solid #555;
@@ -108,14 +142,14 @@ body.dark-mode {
 
 /* 2. İÇERİK KUTUSU (jspsych-content) */
 .jspsych-content {
-  max-width: 800px; 
-  width: 90%;       
-  margin: 0 auto;   
-  
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+
   /* BU KISIM KRİTİK: Her şeyi hizaya sokan kodlar */
   display: flex;
   flex-direction: column; /* Alt alta diz */
-  align-items: center;    /* Yatayda tam ortala */
+  align-items: center; /* Yatayda tam ortala */
   justify-content: flex-start;
 }
 
@@ -124,12 +158,20 @@ body.dark-mode {
   width: 100%;
   display: flex;
   justify-content: center; /* Butonu grubun içinde ortala */
-  margin-top: 20px;        /* Kutu ile buton arası mesafe */
+  margin-top: 20px; /* Kutu ile buton arası mesafe */
 }
 
 // --- MOBILE RESPONSIVENESS ---
 @media (max-width: 600px) {
-  .theme-toggle-btn { width: 32px; height: 32px; font-size: 16px; }
-  #dark-mode-navbar { height: 40px; }
-  body { padding-top: 45px !important; }
+  .theme-toggle-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  #dark-mode-navbar {
+    height: 40px;
+  }
+  body {
+    padding-top: 45px !important;
+  }
 }

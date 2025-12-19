@@ -2,8 +2,9 @@
   "name": "jspsych-experiment",
   "private": true,
   "scripts": {
-    "start": "npm run start:linguistic",
-    "start:linguistic": "jspsych run linguistic",
+    "start": "npm run start:tr",
+    "start:tr": "cross-env DEFAULT_LANG=tr jspsych run linguistic",
+    "start:de": "cross-env DEFAULT_LANG=de jspsych run linguistic",
     "start:visual": "jspsych run visual",
     "build": "npm run build:linguistic && npm run build:visual",
     "build:linguistic": "jspsych build linguistic",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.2",
+    "cross-env": "^10.1.0",
     "css-loader": "^7.1.2",
     "jspsych-builder": "^4.4.0",
     "sass": "^1.96.0",

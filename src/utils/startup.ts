@@ -1,29 +1,39 @@
+// src/utils/startup.ts
+
 import i18next from "i18next";
 import { initJsPsych } from "jspsych";
 
-interface StartupConfig {
-  trResources: any;
-  deResources: any;
-}
+import {
+  hasGlobalErrorOccurred,
+  registerGlobalErrorBoundary,
+} from "../errors/globalErrorBoundary";
+import { languageMiddleware } from "../middleware/languageMiddleware";
+import { StartupConfig } from "../types/interfaces";
 
 export async function setupExperiment({
   trResources,
   deResources,
 }: StartupConfig) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const urlLang = urlParams.get("lang");
-  const supportedLangs = ["tr", "de"];
-  const currentLang =
-    urlLang && supportedLangs.includes(urlLang) ? urlLang : "tr";
+  // 0️⃣ PROD CONSOLE SİLENCING
+  silenceConsoleInProduction();
 
+  // 1️⃣ GLOBAL ERROR BOUNDARY
+  registerGlobalErrorBoundary();
+
+  // 2️⃣ LANGUAGE MIDDLEWARE (TEK OTORİTE)
+  const lang = languageMiddleware();
+
+  // 3️⃣ i18next INIT
   await i18next.init({
-    lng: currentLang,
+    lng: lang,
     resources: {
       tr: { translation: trResources },
       de: { translation: deResources },
     },
+    fallbackLng: false,
   });
 
+  // 4️⃣ JsPsych Root Element
   let root = document.getElementById("jspsych-root");
   if (!root) {
     root = document.createElement("div");
@@ -31,28 +41,41 @@ export async function setupExperiment({
     document.body.appendChild(root);
   }
 
+  // 5️⃣ Dark Mode UI
   setupDarkModeUI();
 
   const jsPsych = initJsPsych({
     display_element: root,
     clear_html_on_finish: true,
+
+    on_finish: () => {
+      jsPsych.data.addProperties({
+        fatal_error: hasGlobalErrorOccurred(),
+      });
+    },
   });
 
+  // 7️⃣ Global Data Properties
+  const urlParams = new URLSearchParams(window.location.search);
+
   jsPsych.data.addProperties({
-    language: currentLang,
+    url_lang: lang, // middleware'den gelen, validate edilmiş değer
     url_parameters: Object.fromEntries(urlParams),
   });
 
-  return { jsPsych, currentLang };
+  return { jsPsych };
 }
 
+/**
+ * Tema yönetimi ve buton oluşturma
+ */
 function setupDarkModeUI() {
   const THEME_KEY = "theme";
 
   const applyTheme = (isDark: boolean) => {
     document.body.classList.toggle("dark-mode", isDark);
     localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
-    button.textContent = isDark ? "☀️" : "🌙";
+    if (button) button.textContent = isDark ? "☀️" : "🌙";
   };
 
   let existing = document.getElementById("dark-mode-navbar");
@@ -73,4 +96,11 @@ function setupDarkModeUI() {
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   applyTheme(savedTheme === "dark" || (!savedTheme && prefersDark));
+}
+
+function silenceConsoleInProduction() {
+  if (process.env.NODE_ENV === "production") {
+    console.error = () => {};
+    console.warn = () => {};
+  }
 }

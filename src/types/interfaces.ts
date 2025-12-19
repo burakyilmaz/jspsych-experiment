@@ -27,4 +27,37 @@ interface SavedSession {
   trialData: any[];
 }
 
-export { RunOptions, SentenceData, SavedSession };
+interface StimuliConfig {
+  itemCountLearning: number;
+  testOldCount: number;
+  testNewCount: number;
+  lang: "tr" | "de";
+}
+
+interface StimulusItem {
+  id: number;
+
+  // Türkçe Veriler
+  tr_stem: string;
+  tr_direct: string;
+  tr_indirect: string;
+
+  // Almanca Veriler
+  de_stem: string;
+  de_direct: string;
+  de_indirect: string;
+}
+
+interface StartupConfig {
+  trResources: any;
+  deResources: any;
+}
+
+export {
+  RunOptions,
+  SentenceData,
+  SavedSession,
+  StimuliConfig,
+  StimulusItem,
+  StartupConfig,
+};
