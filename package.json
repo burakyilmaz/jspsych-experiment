@@ -20,7 +20,8 @@
     "@jspsych/plugin-survey-multi-choice": "^2.1.0",
     "@supabase/supabase-js": "^2.89.0",
     "i18next": "^25.7.3",
-    "jspsych": "^8.2.2"
+    "jspsych": "^8.2.2",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/node": "^25.0.2",
