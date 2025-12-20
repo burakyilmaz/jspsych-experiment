@@ -1,8 +1,8 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 1.5.0
- * @assets assets/  <-- Yapısal bütünlük için
+ * @version 1.5.1
+ * @assets assets/
  */
 
 import "../styles/main.scss";
@@ -47,7 +47,7 @@ export async function run({ assetPaths }: RunOptions) {
     deResources: deTranslations,
   });
 
-  const lang = currentLang()!;
+  const lang = currentLang()!; // i18next tarafından onaylanmış aktif dil
   const subject_id = getOrCreateSubjectId();
   const activeDataPipeId = DATAPIPE_IDS[EXP_TYPE][lang];
 
@@ -58,19 +58,19 @@ export async function run({ assetPaths }: RunOptions) {
   );
 
   /**
-   * LANGUAGE GUARD: Dil uyuşmazlığında oturumu sıfırla
-   * Katılımcı linkten manuel dil değiştirirse veri bütünlüğünü korur.
+   * GÜNCELLENMİŞ LANGUAGE GUARD:
+   * Mantık: Eğer bir oturum varsa VE (oturumun dili kaydedilmemişse VEYA mevcut dilden farklıysa) SIFIRLA.
+   * Bu sayede "undefined" olan eski oturumlar da yeni dile geçince otomatik silinir.
    */
-  if (
-    savedSession &&
-    (savedSession as any).lang &&
-    (savedSession as any).lang !== lang
-  ) {
+  if (savedSession && (savedSession as any).lang !== lang) {
+    console.warn(
+      "Language mismatch detected. Resetting session for data integrity."
+    );
     SessionManager.clear(EXP_TYPE, subject_id);
     savedSession = null;
   }
 
-  // 3. Yeni Oturum Oluşturma (Eğer kayıt yoksa)
+  // 3. Yeni Oturum Oluşturma (Eğer kayıt yoksa veya dil uyuşmazlığı nedeniyle silindiyse)
   if (!savedSession) {
     const participantNumber = await registerParticipant(lang, subject_id);
 
@@ -89,15 +89,11 @@ export async function run({ assetPaths }: RunOptions) {
       trialIndex: -1,
       trialData: [],
       participantNumber: participantNumber,
-      lang: lang, // Dil bilgisini oturuma kaydet
+      lang: lang, // Aktif dili oturuma mühürle
     } as any;
     SessionManager.save(EXP_TYPE, subject_id, savedSession);
   }
 
-  /**
-   * TYPE SAFETY: savedSession'ın null olmadığını kesinleştiriyoruz
-   * Bu satır "possibly null" hatalarını çözer.
-   */
   const currentSession = savedSession!;
 
   // 4. Global Veri Özellikleri
@@ -115,7 +111,7 @@ export async function run({ assetPaths }: RunOptions) {
     });
   }
 
-  // 5. Timeline Yardımcı Fonksiyonları
+  // 5. Timeline Hazırlığı
   const timeline: any[] = [];
   const baseTrial = {
     on_start: () => (jsPsych.getDisplayElement().innerHTML = ""),
@@ -131,8 +127,6 @@ export async function run({ assetPaths }: RunOptions) {
     );
 
   // 6. TIMELINE AKIŞI
-
-  // Preload
   timeline.push(createPreloadTimeline(assetPaths.images || []));
 
   let currentIdx = 0;
@@ -188,16 +182,12 @@ export async function run({ assetPaths }: RunOptions) {
   timeline.push(...testTrials);
   currentIdx += currentSession.testStimuli.length;
 
-  // Veri Kaydetme (DataPipe)
+  // Kayıt ve Teşekkür
   timeline.push(
     createSaveTimeline(subject_id, jsPsych, EXP_TYPE, activeDataPipeId)
   );
-  currentIdx++;
-
-  // Deney Tamamlandı Ekranı
   timeline.push(createCompletionTimeline(baseTrial, EXP_TYPE, subject_id));
 
-  // Deneyi Başlat
   await jsPsych.run(timeline);
   return jsPsych;
 }
