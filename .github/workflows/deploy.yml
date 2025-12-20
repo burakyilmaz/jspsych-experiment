@@ -30,17 +30,13 @@ jobs:
 
       - name: Prepare GitHub Pages content
         run: |
-          # Sadece deney tiplerine göre ana klasörler oluşturuyoruz.
-          # Gruplar (standard/heritage) klasör olmayacak, query ile yönetilecek.
-          mkdir -p pages/linguistic pages/visual
-
-          # Linguistic dosyalarını ayıkla
+          mkdir pages
+          # Linguistic: en son versiyon dosyayı al
           LATEST_LINGUISTIC=$(ls packaged/linguistic_*.zip | sort -V | tail -n 1)
-          unzip "$LATEST_LINGUISTIC" -d pages/linguistic
-
-          # Visual dosyalarını ayıkla
+          unzip "$LATEST_LINGUISTIC" -d pages
+          # Visual: en son versiyon dosyayı al
           LATEST_VISUAL=$(ls packaged/visual_*.zip | sort -V | tail -n 1)
-          unzip "$LATEST_VISUAL" -d pages/visual
+          unzip "$LATEST_VISUAL" -d pages
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
