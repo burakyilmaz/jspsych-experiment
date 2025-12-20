@@ -2,6 +2,7 @@
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
  * @version 1.5.0
+ * @assets assets/  <-- Yapısal bütünlük için
  */
 
 import "../styles/main.scss";
@@ -56,6 +57,19 @@ export async function run({ assetPaths }: RunOptions) {
     subject_id
   );
 
+  /**
+   * LANGUAGE GUARD: Dil uyuşmazlığında oturumu sıfırla
+   * Katılımcı linkten manuel dil değiştirirse veri bütünlüğünü korur.
+   */
+  if (
+    savedSession &&
+    (savedSession as any).lang &&
+    (savedSession as any).lang !== lang
+  ) {
+    SessionManager.clear(EXP_TYPE, subject_id);
+    savedSession = null;
+  }
+
   // 3. Yeni Oturum Oluşturma (Eğer kayıt yoksa)
   if (!savedSession) {
     const participantNumber = await registerParticipant(lang, subject_id);
@@ -75,22 +89,28 @@ export async function run({ assetPaths }: RunOptions) {
       trialIndex: -1,
       trialData: [],
       participantNumber: participantNumber,
-    };
+      lang: lang, // Dil bilgisini oturuma kaydet
+    } as any;
     SessionManager.save(EXP_TYPE, subject_id, savedSession);
   }
+
+  /**
+   * TYPE SAFETY: savedSession'ın null olmadığını kesinleştiriyoruz
+   * Bu satır "possibly null" hatalarını çözer.
+   */
+  const currentSession = savedSession!;
 
   // 4. Global Veri Özellikleri
   jsPsych.data.addProperties({
     subject_id: subject_id,
-    participant_number: savedSession.participantNumber,
+    participant_number: currentSession.participantNumber,
     experiment_type: EXP_TYPE,
     lang: lang,
   });
 
-  // --- KRİTİK: ESKİ VERİLERİ BELLEĞE GERİ YÜKLE ---
-  // Sayfa yenilendiğinde LocalStorage'daki verileri jsPsych hafızasına enjekte eder
-  if (savedSession.trialData && savedSession.trialData.length > 0) {
-    savedSession.trialData.forEach((d) => {
+  // --- ESKİ VERİLERİ BELLEĞE GERİ YÜKLE ---
+  if (currentSession.trialData && currentSession.trialData.length > 0) {
+    currentSession.trialData.forEach((d) => {
       jsPsych.data.get().push(d);
     });
   }
@@ -105,14 +125,14 @@ export async function run({ assetPaths }: RunOptions) {
     SessionManager.updateProgress(
       EXP_TYPE,
       subject_id,
-      savedSession!,
+      currentSession,
       idx,
       data
     );
 
   // 6. TIMELINE AKIŞI
 
-  // Preload (Dilsel deneyde görsel olmayabilir ama yapısal bütünlük için kalmalı)
+  // Preload
   timeline.push(createPreloadTimeline(assetPaths.images || []));
 
   let currentIdx = 0;
@@ -122,7 +142,7 @@ export async function run({ assetPaths }: RunOptions) {
     baseTrial,
     updateSession,
     currentIdx++,
-    savedSession
+    currentSession
   );
   if (welcome) timeline.push(welcome);
 
@@ -131,43 +151,42 @@ export async function run({ assetPaths }: RunOptions) {
     baseTrial,
     updateSession,
     currentIdx++,
-    savedSession
+    currentSession
   );
   if (studyIntro) timeline.push(studyIntro);
 
   // Öğrenme Aşaması (Study Phase)
   const studyTrials = createStudyPhaseTimeline(
-    savedSession.studyStimuli,
+    currentSession.studyStimuli,
     baseTrial,
     updateSession,
     currentIdx,
-    savedSession,
+    currentSession,
     GLOBAL_CONFIG.STUDY_PHASE_DELAY_MS || 2000
   );
   timeline.push(...studyTrials);
-  currentIdx += savedSession.studyStimuli.length;
+  currentIdx += currentSession.studyStimuli.length;
 
   // Test Aşaması Giriş
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSession,
     currentIdx++,
-    savedSession
+    currentSession
   );
   if (testIntro) timeline.push(testIntro);
 
   // Test Aşaması (Test Phase)
-  // GÜNCELLEME: jsPsych nesnesi ilk parametre olarak eklendi
   const testTrials = createTestPhaseTimeline(
     jsPsych,
-    savedSession.testStimuli,
+    currentSession.testStimuli,
     baseTrial,
     updateSession,
     currentIdx,
-    savedSession
+    currentSession
   );
   timeline.push(...testTrials);
-  currentIdx += savedSession.testStimuli.length;
+  currentIdx += currentSession.testStimuli.length;
 
   // Veri Kaydetme (DataPipe)
   timeline.push(
