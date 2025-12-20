@@ -1,7 +1,7 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 1.4.6
+ * @version 1.5.0
  */
 
 import "../styles/main.scss";
@@ -34,13 +34,13 @@ import {
   EXPERIMENT_CONFIGS,
   DATAPIPE_IDS,
 } from "./config/constants";
-// Yeni risksiz kayıt fonksiyonu
 import { registerParticipant } from "./utils/database";
 
 const EXP_TYPE = "linguistic";
 const LING_CONFIG = EXPERIMENT_CONFIGS.linguistic;
 
 export async function run({ assetPaths }: RunOptions) {
+  // 1. STARTUP: i18n ve jsPsych başlatılması
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
@@ -50,13 +50,13 @@ export async function run({ assetPaths }: RunOptions) {
   const subject_id = getOrCreateSubjectId();
   const activeDataPipeId = DATAPIPE_IDS[EXP_TYPE][lang];
 
-  // ... (Katılımcı kontrolü aynı)
-
+  // 2. Session Yükleme
   let savedSession = SessionManager.load<SavedSession<LinguisticTestData>>(
     EXP_TYPE,
     subject_id
   );
 
+  // 3. Yeni Oturum Oluşturma (Eğer kayıt yoksa)
   if (!savedSession) {
     const participantNumber = await registerParticipant(lang, subject_id);
 
@@ -74,30 +74,33 @@ export async function run({ assetPaths }: RunOptions) {
       testStimuli: testPhaseStimuli,
       trialIndex: -1,
       trialData: [],
-      participantNumber: participantNumber, // ANALİZ İÇİN: Numarayı session'a ekledik
+      participantNumber: participantNumber,
     };
     SessionManager.save(EXP_TYPE, subject_id, savedSession);
   }
 
-  // GLOBAL VERİ ÖZELLİKLERİ: Her satıra bu bilgileri otomatik ekler
+  // 4. Global Veri Özellikleri
   jsPsych.data.addProperties({
     subject_id: subject_id,
-    participant_number: (savedSession as any).participantNumber,
+    participant_number: savedSession.participantNumber,
     experiment_type: EXP_TYPE,
     lang: lang,
   });
 
+  // --- KRİTİK: ESKİ VERİLERİ BELLEĞE GERİ YÜKLE ---
+  // Sayfa yenilendiğinde LocalStorage'daki verileri jsPsych hafızasına enjekte eder
   if (savedSession.trialData && savedSession.trialData.length > 0) {
     savedSession.trialData.forEach((d) => {
-      jsPsych.data.get().push(d); // Eski verileri jsPsych'e enjekte eder
+      jsPsych.data.get().push(d);
     });
   }
 
-  // 4. TIMELINE HAZIRLIĞI
+  // 5. Timeline Yardımcı Fonksiyonları
   const timeline: any[] = [];
   const baseTrial = {
     on_start: () => (jsPsych.getDisplayElement().innerHTML = ""),
   };
+
   const updateSession = (idx: number, data: any) =>
     SessionManager.updateProgress(
       EXP_TYPE,
@@ -107,12 +110,14 @@ export async function run({ assetPaths }: RunOptions) {
       data
     );
 
-  // 5. TIMELINE AKIŞI
+  // 6. TIMELINE AKIŞI
+
+  // Preload (Dilsel deneyde görsel olmayabilir ama yapısal bütünlük için kalmalı)
   timeline.push(createPreloadTimeline(assetPaths.images || []));
 
   let currentIdx = 0;
 
-  // Hoşgeldiniz ve Bilgilendirme
+  // Hoşgeldiniz
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSession,
@@ -121,7 +126,7 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (welcome) timeline.push(welcome);
 
-  // Öğrenme Aşaması
+  // Öğrenme Aşaması Giriş
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSession,
@@ -130,18 +135,19 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (studyIntro) timeline.push(studyIntro);
 
+  // Öğrenme Aşaması (Study Phase)
   const studyTrials = createStudyPhaseTimeline(
     savedSession.studyStimuli,
     baseTrial,
     updateSession,
     currentIdx,
     savedSession,
-    GLOBAL_CONFIG.STUDY_PHASE_DELAY_MS
+    GLOBAL_CONFIG.STUDY_PHASE_DELAY_MS || 2000
   );
   timeline.push(...studyTrials);
   currentIdx += savedSession.studyStimuli.length;
 
-  // Test Aşaması
+  // Test Aşaması Giriş
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSession,
@@ -150,7 +156,10 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (testIntro) timeline.push(testIntro);
 
+  // Test Aşaması (Test Phase)
+  // GÜNCELLEME: jsPsych nesnesi ilk parametre olarak eklendi
   const testTrials = createTestPhaseTimeline(
+    jsPsych,
     savedSession.testStimuli,
     baseTrial,
     updateSession,
@@ -158,13 +167,18 @@ export async function run({ assetPaths }: RunOptions) {
     savedSession
   );
   timeline.push(...testTrials);
+  currentIdx += savedSession.testStimuli.length;
 
-  // Kayıt ve Teşekkür
+  // Veri Kaydetme (DataPipe)
   timeline.push(
     createSaveTimeline(subject_id, jsPsych, EXP_TYPE, activeDataPipeId)
   );
+  currentIdx++;
+
+  // Deney Tamamlandı Ekranı
   timeline.push(createCompletionTimeline(baseTrial, EXP_TYPE, subject_id));
 
+  // Deneyi Başlat
   await jsPsych.run(timeline);
   return jsPsych;
 }
