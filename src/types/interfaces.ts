@@ -1,4 +1,11 @@
-import { ExperimentType, ItemType, Condition, Language, Gender } from "./enums";
+import {
+  ExperimentType,
+  ItemType,
+  Condition,
+  Language,
+  Gender,
+  ParticipantGroup,
+} from "./enums";
 
 export interface StartupConfig {
   trResources: any;
@@ -15,12 +22,9 @@ export interface RunOptions {
   environment?: string;
   title?: string;
   version?: string;
-  testType?: ExperimentType; // Enum kullanıldı
+  testType?: ExperimentType;
 }
 
-/**
- * Dilsel (Linguistic) Deney İçin Veri Yapıları
- */
 export interface LinguisticStimulusItem {
   id: number;
   tr_stem: string;
@@ -36,45 +40,41 @@ export interface LinguisticTestData {
   sentence: string;
   option1: string;
   option2: string;
-  item_type: ItemType; // Enum kullanıldı
+  item_type: ItemType;
   shownVersion?: string;
-  condition?: Condition; // Enum kullanıldı
+  condition?: Condition;
 }
 
-/**
- * Görsel (Visual) Deney İçin Veri Yapıları
- */
 export interface VisualStimulusItem {
   id: number;
   tr: string;
   de: string;
   action_key: string;
-  gender: Gender; // Enum kullanıldı
+  gender: Gender;
 }
 
 export interface VisualTestData {
   id: number;
   image_path?: string;
   sentence: string;
-  item_type: ItemType; // Enum kullanıldı
-  condition?: Condition; // Enum kullanıldı
-  gender: Gender; // Enum kullanıldı
+  item_type: ItemType;
+  condition?: Condition;
+  gender: Gender;
 }
 
-/**
- * Oturum Yönetimi ve Genel Konfigürasyonlar
- */
 export interface SavedSession<T = LinguisticTestData | VisualTestData> {
   studyStimuli: T[];
   testStimuli: T[];
   trialIndex: number;
   trialData: any[];
   participantNumber: number;
+  lang: Language;
+  group: ParticipantGroup; // Yeni: Grup bilgisi
 }
 
 export interface StimuliConfig {
   itemCountLearning: number;
   testOldCount: number;
   testNewCount: number;
-  lang: Language; // Enum kullanıldı
+  lang: Language;
 }

@@ -20,9 +20,10 @@
   "buttons": {
     "start": "Starten",
     "continue": "Weiter",
-    "next": "Nächste",
-    "start_test": "Test starten",
-    "confirm": "Bestätigen"
+    "next": "Weiter",
+    "previous": "Zurück",
+    "confirm": "Bestätigen",
+    "start_test": "Test starten"
   },
   "options": {
     "new_sentence": "Neu satz"
@@ -31,5 +32,14 @@
     "already_participated": "Sie haben bereits an dieser Studie teilgenommen. Eine erneute Teilnahme ist nicht möglich.",
     "completion": "Das Experiment ist abgeschlossen. Vielen Dank.",
     "saving_data": "Daten werden gespeichert. Bitte schließen Sie diese Seite nicht."
+  },
+  "demographics": {
+    "validation": {
+      "required": "Bitte beantworten Sie diese Frage."
+    },
+    "questions": {
+      "other_text": "Sonstiges (Bitte angeben)",
+      "other_placeholder": "Hier eingeben..."
+    }
   }
 }

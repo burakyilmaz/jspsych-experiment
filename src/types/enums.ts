@@ -46,3 +46,8 @@ export enum ExperimentPhase {
   RETRIEVAL_RECOGNITION = "retrieval_recognition",
   RETRIEVAL_SOURCE = "retrieval_source",
 }
+
+export enum ParticipantGroup {
+  STANDARD = "standard",
+  HERITAGE = "heritage",
+}

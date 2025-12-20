@@ -21,8 +21,9 @@
     "start": "Başla",
     "continue": "Devam Et",
     "next": "Sonraki",
-    "start_test": "Testi Başlat",
-    "confirm": "Onayla"
+    "previous": "Önceki",
+    "confirm": "Onayla",
+    "start_test": "Testi Başlat"
   },
   "options": {
     "new_sentence": "Yeni cümle"
@@ -31,5 +32,14 @@
     "already_participated": "Bu çalışmaya daha önce katılım sağladınız. Tekrar katılamazsınız.",
     "completion": "Deney tamamlandı. Teşekkür ederiz.",
     "saving_data": "Veriler kaydediliyor. Lütfen bu sayfayı kapatmayın."
+  },
+  "demographics": {
+    "validation": {
+      "required": "Lütfen bu soruyu yanıtlayın."
+    },
+    "questions": {
+      "other_text": "Diğer (Lütfen belirtiniz)",
+      "other_placeholder": "Buraya yazınız..."
+    }
   }
 }

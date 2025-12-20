@@ -1,6 +1,7 @@
 import jsPsychPipe from "@jspsych-contrib/plugin-pipe";
 import i18next from "i18next";
 import { SessionManager } from "../../../utils/session_manager";
+import { markParticipantAsCompleted } from "../../../utils/database";
 
 export function createSaveTimeline(
   subject_id: string,
@@ -23,8 +24,8 @@ export function createSaveTimeline(
         </div>
       `;
     },
-    on_finish: () => {
-      // Veri başarıyla gönderildiğinde oturumu tamamlandı olarak işaretliyoruz
+    on_finish: async () => {
+      await markParticipantAsCompleted(subject_id);
       SessionManager.setCompleted(expType);
       jsPsych.getDisplayElement().innerHTML = ""; // Ekranı temizle
     },

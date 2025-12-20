@@ -1,46 +1,45 @@
-/* src/styles/main.scss */
+// 1. ÜÇÜNCÜ TARAF STİLLERİ
 @import "~jspsych/css/jspsych.css";
+@import "@jspsych/plugin-survey/css/survey.css";
+@import "~survey-core/survey-core.min.css";
 
-.global-error-boundary {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999999;
-}
+// 2. DEĞİŞKENLER VE GLOBAL AYARLAR
+$primary-color: #474747;
+$dark-bg: #1a1a1a;
+$dark-surface: #242424;
+$error-red: #e74c3c;
 
-.global-error-content {
-  text-align: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.global-error-content h1 {
-  font-size: 2rem;
-  margin-bottom: 0.75rem;
-}
-
-.global-error-content p {
-  font-size: 1rem;
-  opacity: 0.7;
-}
-
-// --- GLOBAL AYARLAR ---
 body {
   background-color: #ffffff;
   color: #000000;
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
-  padding-top: 60px !important; // Navbar boşluğu
+  padding-top: 60px !important; // Navbar için üst boşluk
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-// Anket sorularındaki yıldızı gizle
-.jspsych-survey-multi-choice-question .required {
-  display: none;
+// jsPsych İçerik Hizalaması
+.jspsych-content {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-// --- NAVBAR STYLES ---
+// jsPsych Buton Grubu Ortalaması
+#jspsych-html-button-response-btngroup {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+// 3. BİLEŞENLER (Navbar, Spinner, Global Error)
+
+// Navbar & Theme Toggle
 #dark-mode-navbar {
   position: fixed;
   top: 0;
@@ -57,7 +56,6 @@ body {
   box-sizing: border-box;
 }
 
-// --- TOGGLE BUTTON ---
 .theme-toggle-btn {
   background: transparent;
   color: #333;
@@ -70,18 +68,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  line-height: 1;
   transition: all 0.3s ease;
-
   &:hover {
     background: rgba(0, 0, 0, 0.05);
     transform: rotate(15deg);
-    border-color: #999;
   }
 }
 
-// --- LOADING SPINNER ---
+// Yükleme Göstergesi
 .spinner {
   margin: 20px auto;
   width: 40px;
@@ -101,30 +95,106 @@ body {
   }
 }
 
-// --- DARK MODE THEME (GLOBAL) ---
+// 4. HATA EKRANLARI (404 ve Global Fatal)
+
+// Global Error Boundary (Çökme Durumu)
+.global-error-boundary {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  .global-error-content {
+    text-align: center;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+// 404 Container (Yanlış URL Durumu)
+.error-container {
+  text-align: center;
+  padding: 100px 20px;
+  h1 {
+    font-size: 80px;
+    color: $error-red;
+    margin: 0;
+    font-weight: bold;
+  }
+  h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 30px 0;
+  }
+  p {
+    font-size: 16px;
+    color: #7f8c8d;
+    max-width: 450px;
+    margin: 20px auto;
+    line-height: 1.6;
+  }
+}
+
+// 5. DENEY ÖZEL STİLLERİ (Linguistic/Visual)
+
+.sentence-container {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+
+  .study-sentence,
+  .test-prompt {
+    font-size: 24px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0;
+  }
+}
+
+// Anketlerdeki zorunlu alan yıldızını gizle
+.jspsych-survey-multi-choice-question .required,
+.sd-question__required-text {
+  display: none;
+}
+
+// 6. DARK MODE (Tüm Overridelar)
+
 body.dark-mode {
-  background-color: #1a1a1a !important;
+  background-color: $dark-bg !important;
   color: #e0e0e0 !important;
 
   #dark-mode-navbar {
-    background-color: #1a1a1a !important;
+    background-color: $dark-bg !important;
   }
-
   .theme-toggle-btn {
     color: #ffd700;
     border-color: #666;
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
   }
-
   .spinner {
     border-color: #444;
     border-top-color: #ffd700;
   }
+  .global-error-boundary {
+    background: $dark-bg;
+    color: white;
+  }
 
+  // jsPsych Genel Elemanlar
   .jspsych-btn {
-    background-color: #333;
+    background-color: $dark-surface;
     color: #fff;
     border-color: #555;
     &:hover {
@@ -134,34 +204,23 @@ body.dark-mode {
 
   input[type="text"],
   textarea {
-    background-color: #333;
+    background-color: $dark-surface;
     color: #fff;
     border: 1px solid #555;
   }
+
+  // Deney Konteynırı
+  .sentence-container {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    .study-sentence,
+    .test-prompt {
+      color: #fff;
+    }
+  }
 }
 
-/* 2. İÇERİK KUTUSU (jspsych-content) */
-.jspsych-content {
-  max-width: 800px;
-  width: 90%;
-  margin: 0 auto;
-
-  /* BU KISIM KRİTİK: Her şeyi hizaya sokan kodlar */
-  display: flex;
-  flex-direction: column; /* Alt alta diz */
-  align-items: center; /* Yatayda tam ortala */
-  justify-content: flex-start;
-}
-
-/* jsPsych'in kendi buton grubu kapsayıcısını da hizalayalım */
-#jspsych-html-button-response-btngroup {
-  width: 100%;
-  display: flex;
-  justify-content: center; /* Butonu grubun içinde ortala */
-  margin-top: 20px; /* Kutu ile buton arası mesafe */
-}
-
-// --- MOBILE RESPONSIVENESS ---
+// 7. MOBİL UYUMLULUK
 @media (max-width: 600px) {
   .theme-toggle-btn {
     width: 32px;
@@ -174,63 +233,10 @@ body.dark-mode {
   body {
     padding-top: 45px !important;
   }
-}
-
-// Dark Mode Overrides for Linguistic
-body.dark-mode {
   .sentence-container {
-    background-color: #2d2d2d; // Kutu rengi koyu
-    border: 1px solid #444;
-    box-shadow: none;
-
-    .study-sentence,
-    .test-prompt {
-      color: #fff; // Yazı rengi beyaz
+    padding: 20px;
+    .study-sentence {
+      font-size: 20px;
     }
-  }
-}
-
-// Cümle kutusu stilleri
-.sentence-container {
-  background: white;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-
-  /* GENİŞLİK AYARI */
-  width: 100%; /* Parent ne kadarsa o kadar ol */
-  max-width: 100%; /* Asla parent'tan taşma */
-  box-sizing: border-box; /* Padding ekleyince genişlik şişmesin */
-
-  margin-bottom: 0; /* Boşluğu main.scss'deki buton grubuna verdik */
-  transition: background-color 0.3s, color 0.3s;
-
-  .study-sentence,
-  .test-prompt {
-    font-size: 24px;
-    line-height: 1.5;
-    color: #333;
-    margin: 0;
-  }
-}
-
-.error-page-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  font-family: sans-serif;
-
-  .error-code {
-    font-size: 72px;
-    margin: 0;
-    color: #333;
-  }
-
-  .error-message {
-    font-size: 18px;
-    color: #666;
   }
 }
