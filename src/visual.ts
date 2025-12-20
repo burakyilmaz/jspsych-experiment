@@ -1,7 +1,7 @@
 /**
  * @title Visual Test Experiment
  * @description Görsel uyaranlar üzerinden kaynak bellek ölçümü
- * @version 1.0.0
+ * @version 1.1.0
  * @assets assets/visual/img/
  */
 
@@ -14,7 +14,7 @@ import { currentLang } from "./utils/helpers";
 import { getOrCreateSubjectId, SessionManager } from "./utils/session_manager";
 import { registerParticipant } from "./utils/database";
 import { generateVisualStimuli } from "./experiments/visual/utils/stimuli_factory";
-import { studyPool, foilPool } from "./data/visual_stimuli"; //
+import { studyPool, foilPool } from "./data/visual_stimuli";
 
 import trTranslations from "../src/locales/tr/translation.json";
 import deTranslations from "../src/locales/de/translation.json";
@@ -39,6 +39,7 @@ const EXP_TYPE = "visual";
 const VIS_CONFIG = EXPERIMENT_CONFIGS.visual;
 
 export async function run({ assetPaths }: RunOptions) {
+  // 1. STARTUP: i18n ve jsPsych başlatılması
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
@@ -48,6 +49,7 @@ export async function run({ assetPaths }: RunOptions) {
   const subject_id = getOrCreateSubjectId();
   const activeDataPipeId = DATAPIPE_IDS[EXP_TYPE][lang];
 
+  // Katılım Kontrolü
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -62,22 +64,25 @@ export async function run({ assetPaths }: RunOptions) {
     return jsPsych;
   }
 
+  // 2. Session Yükleme
   let savedSession = SessionManager.load<SavedSession<VisualTestData>>(
     EXP_TYPE,
     subject_id
   );
 
-  // Language Guard: Dil uyuşmazlığında oturumu sıfırla
-  if (
-    savedSession &&
-    (savedSession as any).lang &&
-    (savedSession as any).lang !== lang
-  ) {
+  /**
+   * 🛡️ GÜNCELLENMİŞ LANGUAGE GUARD (v1.5.1 Mantığı):
+   * Dil uyuşmazlığında veya dil bilgisi eksikse oturumu sıfırla.
+   */
+  if (savedSession && (savedSession as any).lang !== lang) {
+    console.warn(
+      "Language mismatch detected. Resetting visual session for data integrity."
+    );
     SessionManager.clear(EXP_TYPE, subject_id);
     savedSession = null;
   }
 
-  // Session Initialization
+  // 3. Session Başlatma (Yeni oturum veya reset sonrası)
   if (!savedSession) {
     const participantNumber = await registerParticipant(lang, subject_id);
     const { learningPhaseStimuli, testPhaseStimuli } = generateVisualStimuli(
@@ -99,15 +104,15 @@ export async function run({ assetPaths }: RunOptions) {
       trialIndex: -1,
       trialData: [],
       participantNumber: participantNumber,
-      lang: lang,
+      lang: lang, // Oturumu dile mühürle
     } as any;
     SessionManager.save(EXP_TYPE, subject_id, savedSession);
   }
 
-  // TypeScript Safety: savedSession'ın bu noktadan sonra null olmadığını kesinleştiriyoruz
+  // TYPE SAFETY: currentSession'ın null olmadığını kesinleştiriyoruz
   const currentSession = savedSession!;
 
-  // 4. ANALİZE HAZIR GLOBAL ÖZELLİKLER
+  // 4. Global Veri Özellikleri
   jsPsych.data.addProperties({
     subject_id: subject_id,
     participant_number: currentSession.participantNumber,
@@ -115,14 +120,14 @@ export async function run({ assetPaths }: RunOptions) {
     lang: lang,
   });
 
-  // Resume Data Sync: Eski verileri jsPsych'a yükle
+  // Resume Data Sync: Eski verileri jsPsych hafızasına geri yükle
   if (currentSession.trialData && currentSession.trialData.length > 0) {
     currentSession.trialData.forEach((d) => {
       jsPsych.data.get().push(d);
     });
   }
 
-  // 5. TIMELINE OLUŞTURMA
+  // 5. Timeline Hazırlığı
   const timeline: any[] = [];
   const baseTrial = {
     on_start: () => (jsPsych.getDisplayElement().innerHTML = ""),
@@ -137,6 +142,7 @@ export async function run({ assetPaths }: RunOptions) {
       data
     );
 
+  // Görsel Ön Yükleme (Preload)
   const imagesToPreload = currentSession.studyStimuli
     .map((item) => item.image_path)
     .filter((path) => !!path) as string[];
@@ -145,7 +151,9 @@ export async function run({ assetPaths }: RunOptions) {
 
   let currentIdx = 0;
 
-  // Welcome, Intro ve Phase'ler
+  // 6. TIMELINE AKIŞI
+
+  // Hoşgeldiniz
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSession,
@@ -154,6 +162,7 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (welcome) timeline.push(welcome);
 
+  // Öğrenme Aşaması Giriş
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSession,
@@ -162,6 +171,7 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (studyIntro) timeline.push(studyIntro);
 
+  // Öğrenme Aşaması (Study Phase)
   const studyTrials = createStudyPhaseTimeline(
     currentSession.studyStimuli,
     baseTrial,
@@ -173,6 +183,7 @@ export async function run({ assetPaths }: RunOptions) {
   timeline.push(...studyTrials);
   currentIdx += currentSession.studyStimuli.length;
 
+  // Test Aşaması Giriş
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSession,
@@ -181,6 +192,7 @@ export async function run({ assetPaths }: RunOptions) {
   );
   if (testIntro) timeline.push(testIntro);
 
+  // Test Aşaması (Test Phase)
   const testTrials = createTestPhaseTimeline(
     jsPsych,
     currentSession.testStimuli,
@@ -190,8 +202,10 @@ export async function run({ assetPaths }: RunOptions) {
     currentSession
   );
   timeline.push(...testTrials);
+  // Not: Visual testte her madde 2 slot (Tanıma+Kaynak) kaplar
   currentIdx += currentSession.testStimuli.length * 2;
 
+  // Kayıt ve Teşekkür
   timeline.push(
     createSaveTimeline(subject_id, jsPsych, EXP_TYPE, activeDataPipeId)
   );
@@ -199,6 +213,7 @@ export async function run({ assetPaths }: RunOptions) {
 
   timeline.push(createCompletionTimeline(baseTrial, EXP_TYPE, subject_id));
 
+  // Deneyi Başlat
   await jsPsych.run(timeline);
   return jsPsych;
 }
