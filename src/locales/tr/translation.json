@@ -2,7 +2,20 @@
   "welcome": "Hoş geldiniz",
   "intro": {
     "study_phase": "Şimdi size arka arkaya cümleler gösterilecek.<br>Lütfen dikkatlice okuyunuz.",
+    "visual_study_phase": "Şimdi size arka arkaya fotoğraflar gösterilecek.<br>Lütfen dikkatlice bakınız.",
     "test_phase": "Öğrenme aşaması bitti.<br>Şimdi size bazı sorular soracağız."
+  },
+  "visual_test": {
+    "questions": {
+      "exists": "Buna benzer bir olay var mıydı?",
+      "source": "Bu eylemin gerçekleştiği bir fotoğraf mı gördün, yoksa gerçekleştiğini fotoğraflardan mı çıkarımladın?"
+    },
+    "options": {
+      "yes": "Evet",
+      "no": "Hayır",
+      "saw_photo": "Eylemin gerçekleştiğini fotoğrafta gördüm",
+      "inferred": "Eylemin gerçekleştiğini fotoğraflardan çıkarımladım"
+    }
   },
   "buttons": {
     "start": "Başla",
@@ -12,7 +25,7 @@
     "confirm": "Onayla"
   },
   "options": {
-    "new_sentence": "Bu yeni bir cümle"
+    "new_sentence": "Yeni cümle"
   },
   "feedback": {
     "already_participated": "Bu çalışmaya daha önce katılım sağladınız. Tekrar katılamazsınız.",

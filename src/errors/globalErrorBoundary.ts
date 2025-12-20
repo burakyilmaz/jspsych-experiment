@@ -1,3 +1,5 @@
+// src/errors/globalErrorBoundary.ts
+
 const ERROR_FLAG_KEY = "__GLOBAL_FATAL_ERROR__";
 
 function renderGenericError(): void {

@@ -1,3 +1,5 @@
+// src/middleware/languageMiddleware.ts
+
 export const ALLOWED_LANGUAGES = ["tr", "de"] as const;
 export type Lang = (typeof ALLOWED_LANGUAGES)[number];
 

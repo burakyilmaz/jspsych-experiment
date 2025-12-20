@@ -1,4 +1,11 @@
-interface RunOptions {
+import { ExperimentType, ItemType, Condition, Language, Gender } from "./enums";
+
+export interface StartupConfig {
+  trResources: any;
+  deResources: any;
+}
+
+export interface RunOptions {
   assetPaths: {
     images: string[];
     audio: string[];
@@ -8,56 +15,66 @@ interface RunOptions {
   environment?: string;
   title?: string;
   version?: string;
-  testType?: "linguistic" | "visual";
+  testType?: ExperimentType; // Enum kullanıldı
 }
 
-interface SentenceData {
+/**
+ * Dilsel (Linguistic) Deney İçin Veri Yapıları
+ */
+export interface LinguisticStimulusItem {
   id: number;
-  sentence: { tr: string; de: string };
-  option1: { tr: string; de: string };
-  option2: { tr: string; de: string };
-  shownVersion?: string;
-  item_type?: "old" | "new";
-}
-
-interface SavedSession {
-  studyStimuli: SentenceData[];
-  testStimuli: SentenceData[];
-  trialIndex: number;
-  trialData: any[];
-}
-
-interface StimuliConfig {
-  itemCountLearning: number;
-  testOldCount: number;
-  testNewCount: number;
-  lang: "tr" | "de";
-}
-
-interface StimulusItem {
-  id: number;
-
-  // Türkçe Veriler
   tr_stem: string;
   tr_direct: string;
   tr_indirect: string;
-
-  // Almanca Veriler
   de_stem: string;
   de_direct: string;
   de_indirect: string;
 }
 
-interface StartupConfig {
-  trResources: any;
-  deResources: any;
+export interface LinguisticTestData {
+  id: number;
+  sentence: string;
+  option1: string;
+  option2: string;
+  item_type: ItemType; // Enum kullanıldı
+  shownVersion?: string;
+  condition?: Condition; // Enum kullanıldı
 }
 
-export {
-  RunOptions,
-  SentenceData,
-  SavedSession,
-  StimuliConfig,
-  StimulusItem,
-  StartupConfig,
-};
+/**
+ * Görsel (Visual) Deney İçin Veri Yapıları
+ */
+export interface VisualStimulusItem {
+  id: number;
+  tr: string;
+  de: string;
+  action_key: string;
+  gender: Gender; // Enum kullanıldı
+}
+
+export interface VisualTestData {
+  id: number;
+  image_path?: string;
+  sentence: string;
+  item_type: ItemType; // Enum kullanıldı
+  condition?: Condition; // Enum kullanıldı
+  gender: Gender; // Enum kullanıldı
+}
+
+/**
+ * Oturum Yönetimi ve Genel Konfigürasyonlar
+ */
+export interface SavedSession<T = LinguisticTestData | VisualTestData> {
+  studyStimuli: T[];
+  testStimuli: T[];
+  trialIndex: number;
+  trialData: any[];
+  participantNumber: number;
+}
+
+export interface StimuliConfig {
+  itemCountLearning: number;
+  testOldCount: number;
+  testNewCount: number;
+  lang: Language; // Enum kullanıldı
+}

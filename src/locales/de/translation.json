@@ -2,7 +2,20 @@
   "welcome": "Willkommen",
   "intro": {
     "study_phase": "Ihnen werden nun nacheinander Sätze angezeigt.<br>Bitte lesen Sie diese sorgfältig durch.",
+    "visual_study_phase": "Ihnen werden nun nacheinander Fotos angezeigt.<br>Bitte schauen Sie sich diese sorgfältig an.",
     "test_phase": "Die Lernphase ist beendet.<br>Nun werden wir Ihnen einige Fragen stellen."
+  },
+  "visual_test": {
+    "questions": {
+      "exists": "Gab es ein ähnliches Ereignis?",
+      "source": "Hast du ein Foto gesehen, auf dem diese Handlung ausgeführt wurde, oder hast du nur aus den Fotos geschlossen, dass sie stattgefunden hat?"
+    },
+    "options": {
+      "yes": "Ja",
+      "no": "Nein",
+      "saw_photo": "Ich habe auf dem Foto gesehen, dass die Handlung ausgeführt wurde",
+      "inferred": "Ich habe aus den Fotos geschlossen, dass die Handlung stattgefunden hat"
+    }
   },
   "buttons": {
     "start": "Starten",
@@ -12,7 +25,7 @@
     "confirm": "Bestätigen"
   },
   "options": {
-    "new_sentence": "Das ist ein neuer Satz"
+    "new_sentence": "Neu satz"
   },
   "feedback": {
     "already_participated": "Sie haben bereits an dieser Studie teilgenommen. Eine erneute Teilnahme ist nicht möglich.",

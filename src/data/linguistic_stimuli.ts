@@ -1,10 +1,10 @@
 // src/data/linguistic_stimuli.ts
-import { StimulusItem } from "../types/interfaces";
+import { LinguisticStimulusItem } from "../types/interfaces";
 
 // -----------------------------------------------------------------------------
 // LİSTE 1: STUDY (ÖĞRENME) HAVUZU
 // -----------------------------------------------------------------------------
-export const studyItems: StimulusItem[] = [
+export const studyPool: LinguisticStimulusItem[] = [
   {
     id: 1,
     tr_stem: "Seda gömleği ...",
@@ -190,7 +190,7 @@ export const studyItems: StimulusItem[] = [
 // -----------------------------------------------------------------------------
 // LİSTE 2: FOIL / NEW (TUZAK) HAVUZU
 // -----------------------------------------------------------------------------
-export const foilItems: StimulusItem[] = [
+export const foilPool: LinguisticStimulusItem[] = [
   {
     id: 21,
     tr_stem: "İlhan çöpleri dışarı ...",

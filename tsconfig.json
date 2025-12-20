@@ -1,20 +1,26 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "noImplicitAny": false,
-    "module": "esnext",
     "target": "es6",
-    "jsx": "react",
-    "allowJs": true,
+    "module": "esnext",
     "moduleResolution": "node",
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // --- GÜVENLİK AYARLARI ---
+    "strict": true /* Tüm katı kuralları açar (Önerilen) */,
+    "noImplicitAny": true /* Tipi belirsiz değişkenlere izin vermez */,
+    "strictNullChecks": true /* 'null' ve 'undefined' hatalarını önler */,
+    "noUnusedLocals": true /* Kullanılmayan değişkenleri raporlar */,
+    "noUnusedParameters": true /* Kullanılmayan parametreleri raporlar */,
+    // -------------------------
+    "allowJs": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "removeComments": false,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["*"]
-    }
+    "removeComments": false
   },
   "include": ["src/**/*"]
 }
