@@ -1,4 +1,3 @@
-// src/experiments/shared/timeline/demographics.ts
 import jsPsychSurvey from "@jspsych/plugin-survey";
 import i18next from "i18next";
 import { ParticipantGroup, Language } from "../../../types/enums";
@@ -11,15 +10,13 @@ export function createDemographicsTimeline(
   group: ParticipantGroup,
   updateSession: any,
   startIdx: number,
-  expType: string, // 🛡️ Eklendi: Deney türü (key üretimi için)
-  subject_id: string // 🛡️ Eklendi: Katılımcı ID (key üretimi için)
+  expType: string,
+  subject_id: string
 ) {
   const lang = (i18next.language.split("-")[0] as Language) || Language.TR;
   const content = (DEMOGRAPHICS_DATA as any)[lang];
   const isHeritage = group === ParticipantGroup.HERITAGE;
 
-  // 🛡️ SurveyJS Auto-Save Keyleri
-  // Her katılımcı ve deney türü için benzersiz anahtarlar oluşturuyoruz
   const DATA_KEY = `survey_data_${expType}_${subject_id}`;
   const STATE_KEY = `survey_state_${expType}_${subject_id}`;
 
@@ -199,7 +196,6 @@ export function createDemographicsTimeline(
     type: jsPsychSurvey,
     survey_json: survey_json,
     survey_function: (survey: Model) => {
-      // 1. VERİLERİ GERİ YÜKLE (Restore Progress)
       const prevData = localStorage.getItem(DATA_KEY);
       if (prevData) {
         survey.data = JSON.parse(prevData);
@@ -208,19 +204,15 @@ export function createDemographicsTimeline(
       const prevState = localStorage.getItem(STATE_KEY);
       if (prevState) {
         const state = JSON.parse(prevState);
-        // Eğer kullanıcı Consent sayfasını geçtiyse, otomatik olarak o sayfaya atlar
         if (state.currentPageNo !== undefined) {
           survey.currentPageNo = state.currentPageNo;
         }
       }
 
-      // 2. ANLIK KAYDETME (Auto-Save)
-      // Soru değeri her değiştiğinde veriyi yedekle
       survey.onValueChanged.add((sender) => {
         localStorage.setItem(DATA_KEY, JSON.stringify(sender.data));
       });
 
-      // Sayfa her değiştiğinde (Next/Previous) UI durumunu yedekle
       survey.onCurrentPageChanged.add((sender) => {
         localStorage.setItem(
           STATE_KEY,
@@ -228,7 +220,6 @@ export function createDemographicsTimeline(
         );
       });
 
-      // Tema Ayarları
       setTimeout(() => {
         const isDarkMode = document.body.classList.contains("dark-mode");
         survey.applyTheme(isDarkMode ? DefaultDark : DefaultLight);
@@ -245,7 +236,6 @@ export function createDemographicsTimeline(
       }
     },
     on_finish: (data: any) => {
-      // 🛡️ TEMİZLİK: Anket tamamen bittiğinde geçici verileri temizle
       localStorage.removeItem(DATA_KEY);
       localStorage.removeItem(STATE_KEY);
 

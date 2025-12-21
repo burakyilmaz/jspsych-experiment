@@ -29,17 +29,16 @@ async function optimizeImages() {
                 const metadata = await image.metadata();
                 const tempPath = path.join(TARGET_DIR, `temp_${file}`);
 
-                // Determining dynamic quality based on original file size
+
                 let targetQuality = 80;
                 if (originalSizeKB < 500) {
-                    targetQuality = 92; // High quality for small-ish files
+                    targetQuality = 92;
                 } else if (originalSizeKB < 1000) {
-                    targetQuality = 85; // Medium quality
+                    targetQuality = 85;
                 }
 
                 let pipeline = image;
 
-                // Only resize if image is wider than 1280px to prevent unnecessary pixel loss
                 if (metadata.width > 1280) {
                     pipeline = pipeline.resize(1280, null, { withoutEnlargement: true });
                 }
@@ -47,7 +46,7 @@ async function optimizeImages() {
                 await pipeline
                     .jpeg({
                         quality: targetQuality,
-                        mozjpeg: true, // Uses higher compression efficiency
+                        mozjpeg: true,
                         progressive: true
                     })
                     .toFile(tempPath);

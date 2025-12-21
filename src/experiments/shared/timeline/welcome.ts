@@ -1,4 +1,3 @@
-// src/experiments/shared/timeline/welcome.ts
 import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import i18next from "i18next";
 
@@ -6,10 +5,8 @@ export function createWelcomeTimeline(
   baseTrial: any,
   updateSession: (idx: number, data: any) => void,
   idx: number,
-  _savedSession: any // Artık içeride kontrol yapmıyoruz
+  _savedSession: any
 ) {
-  // 🛡️ DÜZELTME: if kontrolü ve return null kaldırıldı.
-  // İndeks bütünlüğü için trial her zaman oluşturulmalı.
   return {
     ...baseTrial,
     type: HtmlButtonResponsePlugin,

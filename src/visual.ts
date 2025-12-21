@@ -19,7 +19,6 @@ import trTranslations from "../src/locales/tr/translation.json";
 import deTranslations from "../src/locales/de/translation.json";
 import { RunOptions, VisualTestData } from "./types/interfaces";
 
-
 import {
   GLOBAL_CONFIG,
   EXPERIMENT_CONFIGS,
@@ -48,13 +47,11 @@ const EXP_TYPE = ExperimentType.VISUAL;
 const VIS_CONFIG = EXPERIMENT_CONFIGS.visual;
 
 export async function run({ assetPaths }: RunOptions) {
-  
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
   });
 
-  
   const context = getExperimentContext<VisualTestData>(EXP_TYPE);
   if (!context.isValid) {
     await jsPsych.run([createInvalidPathTimeline()]);
@@ -64,14 +61,12 @@ export async function run({ assetPaths }: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
     participant_group: group,
   });
 
-  
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -86,16 +81,13 @@ export async function run({ assetPaths }: RunOptions) {
     return jsPsych;
   }
 
-  
   if (!sessionToUse) {
-    
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
 
     const lastTrialData = jsPsych.data.get().last(1).values()[0];
     const selectedLang = lastTrialData.lang as Language;
     if (!selectedLang) throw new Error("Language selection failed.");
 
-    
     await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
@@ -109,7 +101,6 @@ export async function run({ assetPaths }: RunOptions) {
     }
 
     try {
-      
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,
@@ -117,7 +108,6 @@ export async function run({ assetPaths }: RunOptions) {
         group!
       );
 
-      
       jsPsych.data.addProperties({
         lang: selectedLang,
         participant_number: participantNumber,
@@ -157,8 +147,6 @@ export async function run({ assetPaths }: RunOptions) {
       return jsPsych;
     }
   } else {
-    
-    // Veritabanındaki trialData'ya zorunlu DataPipe sütunlarını manuel ekliyoruz
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
         jsPsych.data.get().push({
@@ -181,7 +169,6 @@ export async function run({ assetPaths }: RunOptions) {
   const finalDisplay = jsPsych.getDisplayElement();
   if (finalDisplay) finalDisplay.innerHTML = "";
 
-  
   const mainTimeline = buildExperimentTimeline(
     jsPsych,
     sessionToUse!,
@@ -189,7 +176,6 @@ export async function run({ assetPaths }: RunOptions) {
     group!
   );
 
-  
   const startIndex =
     sessionToUse!.trialIndex === -1 ? 0 : sessionToUse!.trialIndex + 1;
   const timelineToRun = mainTimeline.slice(startIndex);
@@ -225,14 +211,12 @@ function buildExperimentTimeline(
 
   let currentIdx = 0;
 
-  
   const images = session.studyStimuli
     .map((i: any) => i.image_path)
     .filter((p: any) => !!p);
   const preload = createPreloadTimeline(images);
   currentIdx++;
 
-  
   const demographics = createDemographicsTimeline(
     jsPsych,
     group,
@@ -242,7 +226,6 @@ function buildExperimentTimeline(
     subject_id
   );
 
-  
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSetupSession,
@@ -250,7 +233,6 @@ function buildExperimentTimeline(
     session
   );
 
-  
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -258,7 +240,6 @@ function buildExperimentTimeline(
     session
   );
 
-  
   const studyTrials = createStudyPhaseTimeline(
     session.studyStimuli,
     baseTrial,
@@ -269,7 +250,6 @@ function buildExperimentTimeline(
   );
   currentIdx += session.studyStimuli.length;
 
-  
   const distractorIntro = createDistractorIntro(
     baseTrial,
     updateSetupSession,
@@ -278,7 +258,6 @@ function buildExperimentTimeline(
   const distractorTrials = createDistractorTimeline(updateSession, currentIdx);
   currentIdx += DISTRACTOR_CONFIG.TRIAL_COUNT * 2;
 
-  
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -293,10 +272,9 @@ function buildExperimentTimeline(
     currentIdx,
     session
   );
-  
+
   currentIdx += session.testStimuli.length * 2;
 
-  
   const save = createSaveTimeline(
     subject_id,
     jsPsych,

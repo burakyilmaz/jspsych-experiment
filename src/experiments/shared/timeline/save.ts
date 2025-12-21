@@ -1,4 +1,3 @@
-// src/experiments/shared/timeline/save.ts
 import jsPsychPipe from "@jspsych-contrib/plugin-pipe";
 import i18next from "i18next";
 import { SessionManager } from "../../../utils/session_manager";
@@ -15,8 +14,6 @@ export function createSaveTimeline(
     action: "save",
     experiment_id: experimentId,
     filename: `${subject_id}.json`,
-    // 🛡️ DÜZELTME: Sadece 'experiment_type' sütununa sahip satırları gönder
-    // Bu sayede dil seçimi gibi global özellikleri olmayan ilk trial'lar DataPipe'a gitmez ve hata vermez.
     data_string: () => {
       const filteredData = jsPsych.data
         .get()

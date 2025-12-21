@@ -1,9 +1,3 @@
-/**
- * Ortak Session ve Katılımcı Yönetimi
- */
-
-// Katılımcı ID'sini getirir veya yeni oluşturur.
-// Bu ID tüm deneyler boyunca sabit kalabilir.
 export function getOrCreateSubjectId(): string {
   let subject_id = localStorage.getItem("subject_id");
   if (!subject_id) {
@@ -13,12 +7,10 @@ export function getOrCreateSubjectId(): string {
   return subject_id;
 }
 
-// Deney bazlı session anahtarı oluşturur (örn: jspsych_resume_linguistic_...)
 function getSessionKey(expType: string, subject_id: string): string {
   return `jspsych_resume_${expType}_${subject_id}`;
 }
 
-// Belirli bir deneyin durumunu (tamamlandı/tamamlanmadı) tutan anahtar
 function getStatusKey(expType: string): string {
   return `experiment_status_${expType}`;
 }

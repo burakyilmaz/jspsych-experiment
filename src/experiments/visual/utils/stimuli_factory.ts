@@ -1,10 +1,9 @@
-// src/experiments/visual/utils/stimuli_factory.ts
 import {
   VisualStimulusItem,
   VisualTestData,
   StimuliConfig,
 } from "../../../types/interfaces";
-import { ItemType, Condition, Language } from "../../../types/enums"; // Enumları ekle
+import { ItemType, Condition, Language } from "../../../types/enums";
 import { shuffleArray } from "../../../utils/helpers";
 
 export function generateVisualStimuli(
@@ -28,7 +27,6 @@ export function generateVisualStimuli(
 
   const learningPhaseStimuli: VisualTestData[] = selectedStudyItems.map(
     (item) => {
-      // Tip güvenli koşul belirleme
       const isDirect = (participantNumber + item.id) % 2 === 0;
       const conditionValue = isDirect ? Condition.DIRECT : Condition.INDIRECT;
       const idFormatted = String(item.id).padStart(2, "0");
@@ -47,8 +45,8 @@ export function generateVisualStimuli(
         id: item.id,
         image_path: actualPath || "undefined_fallback.jpg",
         sentence: lang === Language.TR ? item.tr : item.de,
-        item_type: ItemType.OLD, // Enum kullanımı
-        condition: conditionValue, // Enum kullanımı
+        item_type: ItemType.OLD,
+        condition: conditionValue,
         gender: item.gender,
       };
     }
@@ -65,7 +63,7 @@ export function generateVisualStimuli(
       id: item.id,
       sentence: lang === Language.TR ? item.tr : item.de,
       item_type: ItemType.NEW,
-      condition: Condition.NEW_ITEM, // Buraya atama eklendi
+      condition: Condition.NEW_ITEM,
       gender: item.gender,
     }));
 

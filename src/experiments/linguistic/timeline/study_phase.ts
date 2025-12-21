@@ -1,4 +1,3 @@
-// study_phase.ts
 import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import i18next from "i18next";
 import { LinguisticTestData } from "../../../types/interfaces";

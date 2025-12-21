@@ -46,13 +46,11 @@ const EXP_TYPE = ExperimentType.LINGUISTIC;
 const LING_CONFIG = EXPERIMENT_CONFIGS.linguistic;
 
 export async function run(_options: RunOptions) {
-  
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
   });
 
-  
   const context = getExperimentContext<LinguisticTestData>(EXP_TYPE);
   if (!context.isValid) {
     await jsPsych.run([createInvalidPathTimeline()]);
@@ -62,14 +60,12 @@ export async function run(_options: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
     participant_group: group,
   });
 
-  
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -84,16 +80,13 @@ export async function run(_options: RunOptions) {
     return jsPsych;
   }
 
-  
   if (!sessionToUse) {
-    
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
 
     const lastTrialData = jsPsych.data.get().last(1).values()[0];
     const selectedLang = lastTrialData.lang as Language;
     if (!selectedLang) throw new Error("Language selection failed.");
 
-    
     await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
@@ -107,7 +100,6 @@ export async function run(_options: RunOptions) {
     }
 
     try {
-      
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,
@@ -115,13 +107,11 @@ export async function run(_options: RunOptions) {
         group!
       );
 
-      
       jsPsych.data.addProperties({
         lang: selectedLang,
         participant_number: participantNumber,
       });
 
-      
       const { learningPhaseStimuli, testPhaseStimuli } =
         generateLinguisticStimuli(studyPool, foilPool, {
           itemCountLearning: LING_CONFIG.ITEM_COUNT_LEARNING,
@@ -152,8 +142,6 @@ export async function run(_options: RunOptions) {
       return jsPsych;
     }
   } else {
-    
-    
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
         jsPsych.data.get().push({
@@ -176,7 +164,6 @@ export async function run(_options: RunOptions) {
   const finalDisplay = jsPsych.getDisplayElement();
   if (finalDisplay) finalDisplay.innerHTML = "";
 
-  // 4. ANA AKIŞI BAŞLAT
   const mainTimeline = buildLinguisticTimeline(
     jsPsych,
     sessionToUse!,
@@ -184,7 +171,6 @@ export async function run(_options: RunOptions) {
     group!
   );
 
-  // Dilimleme (Slicing) Mantığı
   const startIndex =
     sessionToUse!.trialIndex === -1 ? 0 : sessionToUse!.trialIndex + 1;
   const timelineToRun = mainTimeline.slice(startIndex);
@@ -198,9 +184,6 @@ export async function run(_options: RunOptions) {
   return jsPsych;
 }
 
-/**
- * Asıl Deney Timeline'ını Oluşturur
- */
 function buildLinguisticTimeline(
   jsPsych: any,
   session: any,
@@ -223,11 +206,9 @@ function buildLinguisticTimeline(
 
   let currentIdx = 0;
 
-  // [0] Preload
   const preload = createPreloadTimeline([]);
   currentIdx++;
 
-  // [1] Demographics
   const demographics = createDemographicsTimeline(
     jsPsych,
     group,
@@ -237,7 +218,6 @@ function buildLinguisticTimeline(
     subject_id
   );
 
-  // [2] Welcome
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSetupSession,
@@ -245,7 +225,6 @@ function buildLinguisticTimeline(
     session
   );
 
-  // [3] Study Intro
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -253,7 +232,6 @@ function buildLinguisticTimeline(
     session
   );
 
-  // [4...N] Study Trials
   const studyTrials = createStudyPhaseTimeline(
     session.studyStimuli,
     baseTrial,
@@ -264,7 +242,6 @@ function buildLinguisticTimeline(
   );
   currentIdx += session.studyStimuli.length;
 
-  // Distractor (Ara Görev)
   const distractorIntro = createDistractorIntro(
     baseTrial,
     updateSetupSession,
@@ -273,7 +250,6 @@ function buildLinguisticTimeline(
   const distractorTrials = createDistractorTimeline(updateSession, currentIdx);
   currentIdx += DISTRACTOR_CONFIG.TRIAL_COUNT * 2;
 
-  // Test
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -290,7 +266,6 @@ function buildLinguisticTimeline(
   );
   currentIdx += session.testStimuli.length;
 
-  // Kayıt ve Bitiş
   const save = createSaveTimeline(
     subject_id,
     jsPsych,

@@ -6,10 +6,8 @@ export function createTestIntroTimeline(
   baseTrial: any,
   updateSession: (idx: number, data: any) => void,
   idx: number,
-  _savedSession: any // Artık kullanılmasa da imza korunuyor
+  _savedSession: any
 ) {
-  // 🛡️ DÜZELTME: İçerideki if kontrolü kaldırıldı.
-  // Timeline uzunluğu sabit kalmalı.
   return {
     ...baseTrial,
     type: HtmlButtonResponsePlugin,

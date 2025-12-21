@@ -1,9 +1,5 @@
-// src/data/linguistic_stimuli.ts
 import { LinguisticStimulusItem } from "../types/interfaces";
 
-// -----------------------------------------------------------------------------
-// LİSTE 1: STUDY (ÖĞRENME) HAVUZU
-// -----------------------------------------------------------------------------
 export const studyPool: LinguisticStimulusItem[] = [
   {
     id: 1,
@@ -187,9 +183,6 @@ export const studyPool: LinguisticStimulusItem[] = [
   },
 ];
 
-// -----------------------------------------------------------------------------
-// LİSTE 2: FOIL / NEW (TUZAK) HAVUZU
-// -----------------------------------------------------------------------------
 export const foilPool: LinguisticStimulusItem[] = [
   {
     id: 21,

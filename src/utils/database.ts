@@ -1,4 +1,3 @@
-// src/utils/database.ts
 import { ExperimentType, ParticipantGroup } from "../types/enums";
 import { supabase } from "./supabaseClient";
 

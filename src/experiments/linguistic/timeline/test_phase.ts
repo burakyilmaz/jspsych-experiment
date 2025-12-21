@@ -1,4 +1,3 @@
-// test_phase.ts
 import SurveyMultiChoicePlugin from "@jspsych/plugin-survey-multi-choice";
 import i18next from "i18next";
 import { LinguisticTestData } from "../../../types/interfaces";
@@ -23,7 +22,6 @@ export function createTestPhaseTimeline(
   testPhaseStimuli.forEach((item, i) => {
     const currentIdx = idx + i;
 
-    // 🛡️ DÜZELTME: İçerideki if kontrolü kaldırıldı.
     trials.push({
       ...baseTrial,
       type: SurveyMultiChoicePlugin,

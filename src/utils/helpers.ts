@@ -1,6 +1,5 @@
-// src/utils/helpers.ts
 import i18next from "i18next";
-import { Language } from "../types/enums"; // Enum'ı içeri aktar
+import { Language } from "../types/enums";
 
 export function shuffleArray<T>(array: T[]): T[] {
   const copy = [...array];
@@ -13,7 +12,7 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 export function currentLang(): Language | null {
   const lang = i18next.language?.split("-")[0];
-  // Enum değerleriyle tip kontrolü yapıyoruz
+
   if (lang === Language.TR || lang === Language.DE) {
     return lang as Language;
   }

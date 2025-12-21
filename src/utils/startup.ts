@@ -1,5 +1,3 @@
-// src/utils/startup.ts
-
 import i18next from "i18next";
 import { initJsPsych } from "jspsych";
 
@@ -9,12 +7,9 @@ import {
 } from "../errors/globalErrorBoundary";
 import { StartupConfig } from "../types/interfaces";
 import { Language } from "../types/enums";
-// 🛡️ Merkezi konfigürasyon import edildi
+
 import { GLOBAL_CONFIG } from "../config/constants";
 
-/**
- * Deneyin teknik temelini (jsPsych, i18n, Hata Yönetimi, UI) kuran ana fonksiyondur.
- */
 export async function setupExperiment({
   trResources,
   deResources,
@@ -62,10 +57,6 @@ export async function setupExperiment({
 }
 
 function setupDarkModeUI() {
-  /**
-   * 🔍 DÜZELTME:
-   * "theme" metnini elden yazmak yerine merkezi sabiti kullanıyoruz.
-   */
   const THEME_KEY = GLOBAL_CONFIG.THEME_STORAGE_KEY;
 
   const applyTheme = (isDark: boolean) => {

@@ -1,5 +1,3 @@
-// src/errors/globalErrorBoundary.ts
-
 const ERROR_FLAG_KEY = "__GLOBAL_FATAL_ERROR__";
 
 function renderGenericError(): void {
@@ -12,7 +10,6 @@ function renderGenericError(): void {
     </div>
   `;
 
-  // error flag (jsPsych on_finish tarafından okunacak)
   (window as any)[ERROR_FLAG_KEY] = true;
 }
 
@@ -21,13 +18,11 @@ export function hasGlobalErrorOccurred(): boolean {
 }
 
 export function registerGlobalErrorBoundary(): void {
-  // Runtime errors
   window.onerror = () => {
     renderGenericError();
     return true;
   };
 
-  // Async / Promise errors
   window.onunhandledrejection = () => {
     renderGenericError();
   };

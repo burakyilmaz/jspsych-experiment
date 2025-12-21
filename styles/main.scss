@@ -3,12 +3,10 @@
  * @version 1.7.2
  */
 
-// 1. ÜÇÜNCÜ TARAF STİLLERİ
 @import "~jspsych/css/jspsych.css";
 @import "@jspsych/plugin-survey/css/survey.css";
 @import "~survey-core/survey-core.min.css";
 
-// 2. DEĞİŞKENLER VE GLOBAL AYARLAR
 $primary-color: #474747;
 $dark-bg: #1a1a1a;
 $dark-surface: #242424;
@@ -20,13 +18,12 @@ body {
   color: #000000;
   transition: background-color 0.3s, color 0.3s;
   margin: 0;
-  // 🛡️ DÜZELTME: Navbar için üst boşluk (1000px hatasını önler)
+
   padding-top: 60px !important;
   font-family: system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
-// jsPsych İçerik Hizalaması (Üstten Başlar)
 .jspsych-content {
   max-width: 800px;
   width: 90%;
@@ -34,12 +31,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; // 🛡️ Dikeyde en üste yaslar
+  justify-content: flex-start;
 }
 
-// 3. BİLEŞENLER
-
-// Navbar & Theme Toggle (Yüzen Tasarım)
 #dark-mode-navbar {
   position: fixed;
   top: 0;
@@ -75,8 +69,6 @@ body {
   }
 }
 
-// 4. DENEY ÖZEL STİLLERİ
-
 .sentence-container {
   background: white;
   padding: 40px;
@@ -95,15 +87,12 @@ body {
   }
 }
 
-// Ara Görev (Distractor) Sayıları
 .number-display {
   font-size: 5rem;
   line-height: 5rem;
   font-weight: 800;
   margin: 20px 0;
 }
-
-// 5. DARK MODE (Tüm Overridelar)
 
 body.dark-mode {
   background-color: $dark-bg !important;
@@ -113,10 +102,9 @@ body.dark-mode {
     background-color: rgba(26, 26, 26, 0.9) !important;
   }
 
-  // 🛡️ KRİTİK: Butonların Beyaz Kalmasını Önleyen Ayarlar
-  .jspsych-btn, 
-  .sd-btn,           // SurveyJS Butonları
-  .sv-btn,           // SurveyJS Alternatif
+  .jspsych-btn,
+  .sd-btn,
+  .sv-btn,
   input[type="button"] {
     background-color: $dark-surface !important;
     color: #ffffff !important;
@@ -129,7 +117,6 @@ body.dark-mode {
     }
   }
 
-  // Anket Input Alanları
   input[type="text"],
   textarea,
   select {
@@ -138,7 +125,6 @@ body.dark-mode {
     border: 1px solid #555 !important;
   }
 
-  // Cümle kutuları
   .sentence-container {
     background-color: #2d2d2d;
     border: 1px solid #444;
@@ -147,20 +133,13 @@ body.dark-mode {
       color: #fff;
     }
   }
-
-  // Ara görev sayıları
-  .number-display {
-    // color: #ffffff !important;
-  }
 }
 
-// 6. EKSTRA TEMİZLİK (SurveyJS Zorunlu Alanlar)
 .sd-question__required-text,
 .jspsych-survey-multi-choice-question .required {
   display: none !important;
 }
 
-// Yükleme Göstergesi (Spinner)
 .spinner {
   margin: 20px auto;
   width: 40px;

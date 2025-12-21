@@ -1,7 +1,7 @@
 import { VisualTestData } from "../../../types/interfaces";
 import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import i18next from "i18next";
-// 🛡️ Enum'ları dahil ediyoruz
+
 import { ExperimentPhase } from "../../../types/enums";
 
 export function createStudyPhaseTimeline(
@@ -25,11 +25,9 @@ export function createStudyPhaseTimeline(
       choices: [i18next.t("buttons.next")],
       enable_button_after: STUDY_IMAGE_DELAY_MS,
       on_finish: (d: any) => {
-        // 🛡️ Hardcoded string yerine Enum kullanıyoruz
         d.phase = ExperimentPhase.ENCODING;
         d.item_id = item.id;
 
-        // item.condition zaten "direct" | "indirect" değerlerini Enum.Condition'dan alıyor olmalı
         d.condition = item.condition;
 
         updateSession(currentIdx, d);

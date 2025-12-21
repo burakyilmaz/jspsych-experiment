@@ -1,12 +1,5 @@
-// src/experiments/shared/timeline/error_screens.ts
-
-// import "../../../../styles/main.scss";
 import HtmlKeyboardResponsePlugin from "@jspsych/plugin-html-keyboard-response";
 
-/**
- * Invalid Path / 404 Error Timeline
- * Styles are managed in main.scss (.error-container)
- */
 export function createInvalidPathTimeline() {
   return {
     type: HtmlKeyboardResponsePlugin,

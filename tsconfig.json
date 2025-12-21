@@ -9,13 +9,12 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    // --- GÜVENLİK AYARLARI ---
-    "strict": true /* Tüm katı kuralları açar (Önerilen) */,
-    "noImplicitAny": true /* Tipi belirsiz değişkenlere izin vermez */,
-    "strictNullChecks": true /* 'null' ve 'undefined' hatalarını önler */,
-    "noUnusedLocals": true /* Kullanılmayan değişkenleri raporlar */,
-    "noUnusedParameters": true /* Kullanılmayan parametreleri raporlar */,
-    // -------------------------
+
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "allowJs": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

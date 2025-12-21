@@ -13,9 +13,8 @@ export function createCompletionTimeline(
     stimulus: `<p>${i18next.t("feedback.completion")}</p>`,
     choices: "NO_KEYS",
     on_start: (trial: any) => {
-      // Önce baseTrial'daki ekran temizleme fonksiyonunu çalıştırıyoruz
       if (baseTrial.on_start) baseTrial.on_start(trial);
-      // Ardından oturumu temizliyoruz
+
       SessionManager.clear(expType, subject_id);
     },
   };

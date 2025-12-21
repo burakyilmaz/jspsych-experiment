@@ -69,7 +69,7 @@ export interface SavedSession<T = LinguisticTestData | VisualTestData> {
   trialData: any[];
   participantNumber: number;
   lang: Language;
-  group: ParticipantGroup; // Yeni: Grup bilgisi
+  group: ParticipantGroup;
 }
 
 export interface StimuliConfig {

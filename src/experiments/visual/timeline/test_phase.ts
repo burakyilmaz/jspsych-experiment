@@ -1,4 +1,3 @@
-// test_phase.ts
 import { VisualTestData } from "../../../types/interfaces";
 import SurveyMultiChoicePlugin from "@jspsych/plugin-survey-multi-choice";
 import i18next from "i18next";
@@ -24,7 +23,6 @@ export function createTestPhaseTimeline(
     const recognitionIdx = idx + i * 2;
     const sourceIdx = idx + i * 2 + 1;
 
-    // --- 1. TANIMA SORUSU ---
     trials.push({
       ...baseTrial,
       type: SurveyMultiChoicePlugin,
@@ -74,7 +72,6 @@ export function createTestPhaseTimeline(
       },
     });
 
-    // --- 2. KAYNAK SORUSU ---
     const sourceTrial = {
       ...baseTrial,
       type: SurveyMultiChoicePlugin,

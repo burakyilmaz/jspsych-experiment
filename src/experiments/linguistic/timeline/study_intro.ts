@@ -6,10 +6,8 @@ export function createStudyIntroTimeline(
   baseTrial: any,
   updateSession: (idx: number, data: any) => void,
   idx: number,
-  savedSession: any // Artık kullanılmasa da imza değişmesin diye kalabilir
+  savedSession: any
 ) {
-  // 🛡️ DÜZELTME: İçerideki if kontrolünü kaldırıyoruz.
-  // Trial her zaman oluşturulmalı, slice onu zaten gerekirse atlayacak.
   return {
     ...baseTrial,
     type: HtmlButtonResponsePlugin,

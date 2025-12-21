@@ -1,10 +1,6 @@
-// src/data/visual_stimuli.ts
 import { Gender } from "../types/enums";
 import { VisualStimulusItem } from "../types/interfaces";
 
-/**
- * STUDY POOL (1-20): Fotoğraflı maddeler
- */
 export const studyPool: VisualStimulusItem[] = [
   {
     id: 1,
@@ -148,9 +144,6 @@ export const studyPool: VisualStimulusItem[] = [
   },
 ];
 
-/**
- * FOIL POOL (21-40): Sadece cümle olan maddeler
- */
 export const foilPool: VisualStimulusItem[] = [
   {
     id: 21,
