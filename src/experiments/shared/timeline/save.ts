@@ -1,3 +1,4 @@
+// src/experiments/shared/timeline/save.ts
 import jsPsychPipe from "@jspsych-contrib/plugin-pipe";
 import i18next from "i18next";
 import { SessionManager } from "../../../utils/session_manager";
@@ -14,9 +15,22 @@ export function createSaveTimeline(
     action: "save",
     experiment_id: experimentId,
     filename: `${subject_id}.json`,
-    data_string: () => jsPsych.data.get().json(),
+    // 🛡️ DÜZELTME: Sadece 'experiment_type' sütununa sahip satırları gönder
+    // Bu sayede dil seçimi gibi global özellikleri olmayan ilk trial'lar DataPipe'a gitmez ve hata vermez.
+    data_string: () => {
+      const filteredData = jsPsych.data
+        .get()
+        .filter({ experiment_type: expType });
+
+      if (filteredData.count() === 0) {
+        console.error(
+          "KRİTİK HATA: DataPipe'a gönderilecek veri bulunamadı! Filtreleme başarısız."
+        );
+      }
+
+      return filteredData.json();
+    },
     on_load: () => {
-      // Kayıt sırasında kullanıcıya görsel bir geri bildirim veriyoruz
       jsPsych.getDisplayElement().innerHTML = `
         <div style="text-align:center">
           <p>${i18next.t("feedback.saving_data")}</p>
@@ -25,9 +39,9 @@ export function createSaveTimeline(
       `;
     },
     on_finish: async () => {
-      await markParticipantAsCompleted(subject_id);
+      await markParticipantAsCompleted(subject_id, expType);
       SessionManager.setCompleted(expType);
-      jsPsych.getDisplayElement().innerHTML = ""; // Ekranı temizle
+      jsPsych.getDisplayElement().innerHTML = "";
     },
   };
 }

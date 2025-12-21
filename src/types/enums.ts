@@ -51,3 +51,17 @@ export enum ParticipantGroup {
   STANDARD = "standard",
   HERITAGE = "heritage",
 }
+
+export enum Phase {
+  SETUP = "setup",
+  DISTRACTOR = "distractor",
+  ENCODING = "encoding",
+  RETRIEVAL = "retrieval",
+  SAVE = "save",
+}
+
+export enum TaskName {
+  DISTRACTOR = "distractor",
+  LINGUISTIC = "linguistic",
+  VISUAL = "visual",
+}

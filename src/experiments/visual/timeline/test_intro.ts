@@ -3,12 +3,10 @@ import i18next from "i18next";
 
 export function createTestIntroTimeline(
   baseTrial: any,
-  updateSession: (idx: number, data: any) => void,
+  updateSession: any,
   idx: number,
-  savedSession: any
+  _session: any
 ) {
-  if (savedSession!.trialIndex >= idx) return null;
-
   return {
     ...baseTrial,
     type: HtmlButtonResponsePlugin,

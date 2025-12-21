@@ -1,22 +1,20 @@
 import { VisualTestData } from "../../../types/interfaces";
 import HtmlButtonResponsePlugin from "@jspsych/plugin-html-button-response";
 import i18next from "i18next";
+// 🛡️ Enum'ları dahil ediyoruz
+import { ExperimentPhase } from "../../../types/enums";
 
 export function createStudyPhaseTimeline(
   learningPhaseStimuli: VisualTestData[],
   baseTrial: any,
   updateSession: (idx: number, data: any) => void,
   idx: number,
-  savedSession: any,
+  _session: any,
   STUDY_IMAGE_DELAY_MS: number
 ) {
-  const trials: any[] = [];
-
-  learningPhaseStimuli.forEach((item, i) => {
+  return learningPhaseStimuli.map((item, i) => {
     const currentIdx = idx + i;
-    if (savedSession!.trialIndex >= currentIdx) return;
-
-    trials.push({
+    return {
       ...baseTrial,
       type: HtmlButtonResponsePlugin,
       stimulus: `
@@ -27,13 +25,15 @@ export function createStudyPhaseTimeline(
       choices: [i18next.t("buttons.next")],
       enable_button_after: STUDY_IMAGE_DELAY_MS,
       on_finish: (d: any) => {
-        d.phase = "encoding";
+        // 🛡️ Hardcoded string yerine Enum kullanıyoruz
+        d.phase = ExperimentPhase.ENCODING;
         d.item_id = item.id;
-        d.condition = item.condition; // direct | indirect
+
+        // item.condition zaten "direct" | "indirect" değerlerini Enum.Condition'dan alıyor olmalı
+        d.condition = item.condition;
+
         updateSession(currentIdx, d);
       },
-    });
+    };
   });
-
-  return trials;
 }

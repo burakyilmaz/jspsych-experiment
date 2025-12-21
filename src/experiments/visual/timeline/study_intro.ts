@@ -3,13 +3,10 @@ import i18next from "i18next";
 
 export function createStudyIntroTimeline(
   baseTrial: any,
-  updateSession: (idx: number, data: any) => void,
+  updateSession: any,
   idx: number,
-  savedSession: any
+  _session: any
 ) {
-  // Eğer bu aşama daha önce geçildiyse (session recovery), tekrar gösterme
-  if (savedSession!.trialIndex >= idx) return null;
-
   return {
     ...baseTrial,
     type: HtmlButtonResponsePlugin,

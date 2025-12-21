@@ -1,3 +1,4 @@
+// src/experiments/shared/timeline/demographics.ts
 import jsPsychSurvey from "@jspsych/plugin-survey";
 import i18next from "i18next";
 import { ParticipantGroup, Language } from "../../../types/enums";
@@ -9,15 +10,21 @@ export function createDemographicsTimeline(
   jsPsych: any,
   group: ParticipantGroup,
   updateSession: any,
-  startIdx: number
+  startIdx: number,
+  expType: string, // 🛡️ Eklendi: Deney türü (key üretimi için)
+  subject_id: string // 🛡️ Eklendi: Katılımcı ID (key üretimi için)
 ) {
   const lang = (i18next.language.split("-")[0] as Language) || Language.TR;
   const content = (DEMOGRAPHICS_DATA as any)[lang];
   const isHeritage = group === ParticipantGroup.HERITAGE;
 
+  // 🛡️ SurveyJS Auto-Save Keyleri
+  // Her katılımcı ve deney türü için benzersiz anahtarlar oluşturuyoruz
+  const DATA_KEY = `survey_data_${expType}_${subject_id}`;
+  const STATE_KEY = `survey_state_${expType}_${subject_id}`;
+
   const survey_json: any = {
     showQuestionNumbers: "off",
-    // requiredText: i18next.t("demographics.validation.required"), // localizable değil
     pageNextText: i18next.t("buttons.next"),
     pagePrevText: i18next.t("buttons.previous"),
     completeText: i18next.t("buttons.confirm"),
@@ -49,6 +56,14 @@ export function createDemographicsTimeline(
             title: content.questions.age,
             inputType: "number",
             isRequired: true,
+            validators: [
+              {
+                type: "numeric",
+                minValue: 18,
+                maxValue: 120,
+                text: i18next.t("demographics.validation.age_range"),
+              },
+            ],
           },
           {
             type: "radiogroup",
@@ -56,7 +71,6 @@ export function createDemographicsTimeline(
             title: content.questions.gender.title,
             choices: content.questions.gender.options,
             showOtherItem: true,
-            // ✅ "Other" metinleri key'den geliyor
             otherText: i18next.t("demographics.questions.other_text"),
             otherPlaceholder: i18next.t(
               "demographics.questions.other_placeholder"
@@ -115,11 +129,18 @@ export function createDemographicsTimeline(
           type: "text",
           name: "move_year",
           title: h.move_year,
-          // ✅ İndeks bazlı kontrol: "Hayır" veya "Nein" seçilirse görünür
           visibleIf: `{born_germany} == '${
             (lang === Language.TR ? ["Evet", "Hayır"] : ["Ja", "Nein"])[1]
           }'`,
           inputType: "number",
+          validators: [
+            {
+              type: "numeric",
+              minValue: 1900,
+              maxValue: new Date().getFullYear(),
+              text: i18next.t("demographics.validation.invalid_year"),
+            },
+          ],
         },
         {
           type: "text",
@@ -178,13 +199,41 @@ export function createDemographicsTimeline(
     type: jsPsychSurvey,
     survey_json: survey_json,
     survey_function: (survey: Model) => {
-      // 🛡️ Eklentinin applyStyles baskısını (satır 166) kırmak için 0ms timeout
+      // 1. VERİLERİ GERİ YÜKLE (Restore Progress)
+      const prevData = localStorage.getItem(DATA_KEY);
+      if (prevData) {
+        survey.data = JSON.parse(prevData);
+      }
+
+      const prevState = localStorage.getItem(STATE_KEY);
+      if (prevState) {
+        const state = JSON.parse(prevState);
+        // Eğer kullanıcı Consent sayfasını geçtiyse, otomatik olarak o sayfaya atlar
+        if (state.currentPageNo !== undefined) {
+          survey.currentPageNo = state.currentPageNo;
+        }
+      }
+
+      // 2. ANLIK KAYDETME (Auto-Save)
+      // Soru değeri her değiştiğinde veriyi yedekle
+      survey.onValueChanged.add((sender) => {
+        localStorage.setItem(DATA_KEY, JSON.stringify(sender.data));
+      });
+
+      // Sayfa her değiştiğinde (Next/Previous) UI durumunu yedekle
+      survey.onCurrentPageChanged.add((sender) => {
+        localStorage.setItem(
+          STATE_KEY,
+          JSON.stringify({ currentPageNo: sender.currentPageNo })
+        );
+      });
+
+      // Tema Ayarları
       setTimeout(() => {
         const isDarkMode = document.body.classList.contains("dark-mode");
         survey.applyTheme(isDarkMode ? DefaultDark : DefaultLight);
       }, 0);
 
-      // 🌙 Canlı Tema Değişim Dinleyicisi
       const themeBtn = document.getElementById("theme-toggle-btn");
       if (themeBtn) {
         themeBtn.addEventListener("click", () => {
@@ -196,6 +245,10 @@ export function createDemographicsTimeline(
       }
     },
     on_finish: (data: any) => {
+      // 🛡️ TEMİZLİK: Anket tamamen bittiğinde geçici verileri temizle
+      localStorage.removeItem(DATA_KEY);
+      localStorage.removeItem(STATE_KEY);
+
       jsPsych.data.addProperties(data.response);
       updateSession(startIdx, data.response);
     },
