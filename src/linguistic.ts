@@ -1,7 +1,7 @@
 /**
  * @title Linguistic Test Experiment
  * @description Tez çalışması için geliştirilen dilsel deney uygulaması
- * @version 1.9.8
+ * @version 1.9.9
  */
 
 import "../styles/main.scss";
@@ -62,7 +62,7 @@ export async function run(_options: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (Zorunlu Alanlar için)
+  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (DataPipe Zorunlu Alanlar)
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
@@ -84,28 +84,30 @@ export async function run(_options: RunOptions) {
     return jsPsych;
   }
 
-  // 3. OTURUM KURULUMU (Eğer kayıtlı oturum yoksa)
+  // 3. OTURUM KURULUMU (Yeni Başlangıç)
   if (!sessionToUse) {
-    // A. Dil Seçimi
+    // A. Dil Seçimi Ekranı
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
+
+    const lastTrialData = jsPsych.data.get().last(1).values()[0];
+    const selectedLang = lastTrialData.lang as Language;
+    if (!selectedLang) throw new Error("Language selection failed.");
+
+    // 🛡️ KRİTİK: Spinner mesajı için dili anlık değiştir
+    await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
     if (displayElement) {
       displayElement.innerHTML = `
         <div class="spinner-container">
           <div class="spinner"></div>
-          <p style="margin-top:20px;">Deney hazırlanıyor, lütfen bekleyin...</p>
+          <p style="margin-top:20px;">${i18next.t("setup.preparing")}</p>
         </div>
       `;
     }
 
     try {
-      const lastTrialData = jsPsych.data.get().last(1).values()[0];
-      const selectedLang = lastTrialData.lang as Language;
-
-      if (!selectedLang) throw new Error("Dil seçimi verisi alınamadı.");
-
-      await i18next.changeLanguage(selectedLang);
+      // Veritabanı Kaydı
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,
@@ -113,12 +115,13 @@ export async function run(_options: RunOptions) {
         group!
       );
 
-      // 🛡️ ADIM 2: Yeni oturumda dile ve katılımcı numarasına ait özellikleri ekle
+      // B. Yeni oturum özelliklerini mühürle
       jsPsych.data.addProperties({
         lang: selectedLang,
         participant_number: participantNumber,
       });
 
+      // Stimuli Üretimi
       const { learningPhaseStimuli, testPhaseStimuli } =
         generateLinguisticStimuli(studyPool, foilPool, {
           itemCountLearning: LING_CONFIG.ITEM_COUNT_LEARNING,
@@ -142,15 +145,15 @@ export async function run(_options: RunOptions) {
     } catch (error) {
       console.error("Setup Error:", error);
       if (displayElement) {
-        displayElement.innerHTML = `<p style='color:red; text-align:center;'>Kurulum Hatası: ${
-          error instanceof Error ? error.message : "Bilinmeyen hata"
-        }</p>`;
+        displayElement.innerHTML = `<p style='color:red;'>${i18next.t(
+          "setup.error"
+        )}: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
       }
       return jsPsych;
     }
   } else {
-    // 🛡️ ADIM 3: RESUME (GERİ YÜKLEME) SIRASINDA MANUEL MERGE
-    // getProperties() hatasından kaçınmak için eldeki değişkenleri kullanıyoruz.
+    // 🛡️ ADIM 2: RESUME (GERİ YÜKLEME) SIRASINDA MANUEL MERGE
+    // Zorunlu alanları (subject_id vb.) eski trial verileriyle birleştiriyoruz.
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
         jsPsych.data.get().push({
@@ -164,7 +167,6 @@ export async function run(_options: RunOptions) {
       });
     }
     await i18next.changeLanguage(sessionToUse.lang);
-    // Mevcut özelliklere dili ve numarayı ekle
     jsPsych.data.addProperties({
       lang: sessionToUse.lang,
       participant_number: sessionToUse.participantNumber,
@@ -182,12 +184,13 @@ export async function run(_options: RunOptions) {
     group!
   );
 
+  // Dilimleme (Slicing) Mantığı
   const startIndex =
     sessionToUse!.trialIndex === -1 ? 0 : sessionToUse!.trialIndex + 1;
   const timelineToRun = mainTimeline.slice(startIndex);
 
   if (timelineToRun.length === 0) {
-    console.warn("Tüm denemeler bitmiş.");
+    console.warn("Experiment timeline is empty or already completed.");
     return jsPsych;
   }
 
@@ -195,6 +198,9 @@ export async function run(_options: RunOptions) {
   return jsPsych;
 }
 
+/**
+ * Asıl Deney Timeline'ını Oluşturur
+ */
 function buildLinguisticTimeline(
   jsPsych: any,
   session: any,
@@ -258,14 +264,12 @@ function buildLinguisticTimeline(
   );
   currentIdx += session.studyStimuli.length;
 
-  // [N+1] Distractor Intro
+  // Distractor (Ara Görev)
   const distractorIntro = createDistractorIntro(
     baseTrial,
     updateSetupSession,
     currentIdx++
   );
-
-  // [N+2...] Distractor Trials
   const distractorTrials = createDistractorTimeline(updateSession, currentIdx);
   currentIdx += DISTRACTOR_CONFIG.TRIAL_COUNT * 2;
 
@@ -286,6 +290,7 @@ function buildLinguisticTimeline(
   );
   currentIdx += session.testStimuli.length;
 
+  // Kayıt ve Bitiş
   const save = createSaveTimeline(
     subject_id,
     jsPsych,

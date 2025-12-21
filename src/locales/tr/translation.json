@@ -54,5 +54,6 @@
     "even": "ÇİFT",
     "odd": "TEK",
     "instruction": "Lütfen sayıları tek (J) veya çift (F) olarak sınıflandırın."
-  }
+  },
+  "setup": { "preparing": "Deney hazırlanıyor...", "error": "Kurulum Hatası" }
 }

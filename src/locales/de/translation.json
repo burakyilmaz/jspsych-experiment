@@ -54,5 +54,9 @@
     "even": "GERADE",
     "odd": "UNGERADE",
     "instruction": "Bitte klassifizieren Sie die Zahlen als gerade (F) oder ungerade (J)."
+  },
+  "setup": {
+    "preparing": "Das Experiment wird vorbereitet...",
+    "error": "Setup-Fehler"
   }
 }

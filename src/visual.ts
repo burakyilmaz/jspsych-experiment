@@ -1,7 +1,7 @@
 /**
  * @title Visual Test Experiment
  * @description Görsel uyaranlar üzerinden kaynak bellek ölçümü
- * @version 1.9.8
+ * @version 1.9.9
  * @assets assets/visual/img/
  */
 
@@ -19,6 +19,7 @@ import trTranslations from "../src/locales/tr/translation.json";
 import deTranslations from "../src/locales/de/translation.json";
 import { RunOptions, VisualTestData } from "./types/interfaces";
 
+// 🛡️ Merkezi konfigürasyon importları
 import {
   GLOBAL_CONFIG,
   EXPERIMENT_CONFIGS,
@@ -47,11 +48,13 @@ const EXP_TYPE = ExperimentType.VISUAL;
 const VIS_CONFIG = EXPERIMENT_CONFIGS.visual;
 
 export async function run({ assetPaths }: RunOptions) {
+  // 1. Teknik Kurulum
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
   });
 
+  // 2. Context Yükleme ve Doğrulama
   const context = getExperimentContext<VisualTestData>(EXP_TYPE);
   if (!context.isValid) {
     await jsPsych.run([createInvalidPathTimeline()]);
@@ -61,13 +64,14 @@ export async function run({ assetPaths }: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (DataPipe Validation için)
+  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (Zorunlu Alanlar için)
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
     participant_group: group,
   });
 
+  // Katılım Kontrolü
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -82,21 +86,30 @@ export async function run({ assetPaths }: RunOptions) {
     return jsPsych;
   }
 
+  // 3. OTURUM KURULUMU (Yeni Başlangıç)
   if (!sessionToUse) {
+    // A. Dil Seçimi
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
+
+    const lastTrialData = jsPsych.data.get().last(1).values()[0];
+    const selectedLang = lastTrialData.lang as Language;
+    if (!selectedLang) throw new Error("Language selection failed.");
+
+    // 🛡️ KRİTİK: Spinner'dan ÖNCE dili değiştiriyoruz
+    await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
     if (displayElement) {
-      displayElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div><p>Hazırlanıyor...</p></div>`;
+      displayElement.innerHTML = `
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <p style="margin-top:20px;">${i18next.t("setup.preparing")}</p>
+        </div>
+      `;
     }
 
     try {
-      const lastTrialData = jsPsych.data.get().last(1).values()[0];
-      const selectedLang = lastTrialData.lang as Language;
-
-      if (!selectedLang) throw new Error("Dil seçimi verisi alınamadı.");
-
-      await i18next.changeLanguage(selectedLang);
+      // Veritabanı Kaydı
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,
@@ -135,12 +148,17 @@ export async function run({ assetPaths }: RunOptions) {
 
       SessionManager.save(EXP_TYPE, subject_id, sessionToUse);
     } catch (error) {
-      if (displayElement)
-        displayElement.innerHTML = `<p style='color:red;'>Hata: ${error}</p>`;
+      console.error("Setup Error:", error);
+      if (displayElement) {
+        displayElement.innerHTML = `<p style='color:red; text-align:center;'>${i18next.t(
+          "setup.error"
+        )}: ${error instanceof Error ? error.message : "Unknown error"}</p>`;
+      }
       return jsPsych;
     }
   } else {
     // 🛡️ ADIM 3: RESUME (GERİ YÜKLEME) SIRASINDA MANUEL MERGE
+    // Veritabanındaki trialData'ya zorunlu DataPipe sütunlarını manuel ekliyoruz
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
         jsPsych.data.get().push({
@@ -163,6 +181,7 @@ export async function run({ assetPaths }: RunOptions) {
   const finalDisplay = jsPsych.getDisplayElement();
   if (finalDisplay) finalDisplay.innerHTML = "";
 
+  // 4. ANA AKIŞI BAŞLAT
   const mainTimeline = buildExperimentTimeline(
     jsPsych,
     sessionToUse!,
@@ -170,7 +189,7 @@ export async function run({ assetPaths }: RunOptions) {
     group!
   );
 
-  // 🛡️ İndeksleme Mantığı
+  // 🛡️ İndeksleme Mantığı (Slicing)
   const startIndex =
     sessionToUse!.trialIndex === -1 ? 0 : sessionToUse!.trialIndex + 1;
   const timelineToRun = mainTimeline.slice(startIndex);
@@ -206,12 +225,14 @@ function buildExperimentTimeline(
 
   let currentIdx = 0;
 
+  // [0] Preload
   const images = session.studyStimuli
     .map((i: any) => i.image_path)
     .filter((p: any) => !!p);
   const preload = createPreloadTimeline(images);
-  currentIdx++; // 0
+  currentIdx++;
 
+  // [1] Demographics
   const demographics = createDemographicsTimeline(
     jsPsych,
     group,
@@ -219,20 +240,25 @@ function buildExperimentTimeline(
     currentIdx++,
     EXP_TYPE,
     subject_id
-  ); // 1
+  );
+
+  // [2] Welcome
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSetupSession,
     currentIdx++,
     session
-  ); // 2
+  );
+
+  // [3] Study Intro
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSetupSession,
     currentIdx++,
     session
-  ); // 3
+  );
 
+  // [4...N] Study Trials
   const studyTrials = createStudyPhaseTimeline(
     session.studyStimuli,
     baseTrial,
@@ -243,6 +269,7 @@ function buildExperimentTimeline(
   );
   currentIdx += session.studyStimuli.length;
 
+  // Distractor (Ara Görev)
   const distractorIntro = createDistractorIntro(
     baseTrial,
     updateSetupSession,
@@ -251,6 +278,7 @@ function buildExperimentTimeline(
   const distractorTrials = createDistractorTimeline(updateSession, currentIdx);
   currentIdx += DISTRACTOR_CONFIG.TRIAL_COUNT * 2;
 
+  // Test
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -265,8 +293,10 @@ function buildExperimentTimeline(
     currentIdx,
     session
   );
-  currentIdx += session.testStimuli.length * 2; // Visual testinde 2 trial (Tanıma + Kaynak)
+  // 🛡️ ÖNEMLİ: Visual testinde her madde için 2 trial (Tanıma + Kaynak)
+  currentIdx += session.testStimuli.length * 2;
 
+  // Kayıt ve Bitiş
   const save = createSaveTimeline(
     subject_id,
     jsPsych,
