@@ -117,7 +117,7 @@ export async function run({ assetPaths }: RunOptions) {
         group!
       );
 
-      // 🛡️ ADIM 2: Yeni oturumda dile ve katılımcı numarasına ait özellikleri ekle
+      
       jsPsych.data.addProperties({
         lang: selectedLang,
         participant_number: participantNumber,
@@ -157,7 +157,7 @@ export async function run({ assetPaths }: RunOptions) {
       return jsPsych;
     }
   } else {
-    // 🛡️ ADIM 3: RESUME (GERİ YÜKLEME) SIRASINDA MANUEL MERGE
+    
     // Veritabanındaki trialData'ya zorunlu DataPipe sütunlarını manuel ekliyoruz
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
@@ -181,7 +181,7 @@ export async function run({ assetPaths }: RunOptions) {
   const finalDisplay = jsPsych.getDisplayElement();
   if (finalDisplay) finalDisplay.innerHTML = "";
 
-  // 4. ANA AKIŞI BAŞLAT
+  
   const mainTimeline = buildExperimentTimeline(
     jsPsych,
     sessionToUse!,
@@ -189,7 +189,7 @@ export async function run({ assetPaths }: RunOptions) {
     group!
   );
 
-  // 🛡️ İndeksleme Mantığı (Slicing)
+  
   const startIndex =
     sessionToUse!.trialIndex === -1 ? 0 : sessionToUse!.trialIndex + 1;
   const timelineToRun = mainTimeline.slice(startIndex);
@@ -225,14 +225,14 @@ function buildExperimentTimeline(
 
   let currentIdx = 0;
 
-  // [0] Preload
+  
   const images = session.studyStimuli
     .map((i: any) => i.image_path)
     .filter((p: any) => !!p);
   const preload = createPreloadTimeline(images);
   currentIdx++;
 
-  // [1] Demographics
+  
   const demographics = createDemographicsTimeline(
     jsPsych,
     group,
@@ -242,7 +242,7 @@ function buildExperimentTimeline(
     subject_id
   );
 
-  // [2] Welcome
+  
   const welcome = createWelcomeTimeline(
     baseTrial,
     updateSetupSession,
@@ -250,7 +250,7 @@ function buildExperimentTimeline(
     session
   );
 
-  // [3] Study Intro
+  
   const studyIntro = createStudyIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -258,7 +258,7 @@ function buildExperimentTimeline(
     session
   );
 
-  // [4...N] Study Trials
+  
   const studyTrials = createStudyPhaseTimeline(
     session.studyStimuli,
     baseTrial,
@@ -269,7 +269,7 @@ function buildExperimentTimeline(
   );
   currentIdx += session.studyStimuli.length;
 
-  // Distractor (Ara Görev)
+  
   const distractorIntro = createDistractorIntro(
     baseTrial,
     updateSetupSession,
@@ -278,7 +278,7 @@ function buildExperimentTimeline(
   const distractorTrials = createDistractorTimeline(updateSession, currentIdx);
   currentIdx += DISTRACTOR_CONFIG.TRIAL_COUNT * 2;
 
-  // Test
+  
   const testIntro = createTestIntroTimeline(
     baseTrial,
     updateSetupSession,
@@ -293,10 +293,10 @@ function buildExperimentTimeline(
     currentIdx,
     session
   );
-  // 🛡️ ÖNEMLİ: Visual testinde her madde için 2 trial (Tanıma + Kaynak)
+  
   currentIdx += session.testStimuli.length * 2;
 
-  // Kayıt ve Bitiş
+  
   const save = createSaveTimeline(
     subject_id,
     jsPsych,

@@ -46,13 +46,13 @@ const EXP_TYPE = ExperimentType.LINGUISTIC;
 const LING_CONFIG = EXPERIMENT_CONFIGS.linguistic;
 
 export async function run(_options: RunOptions) {
-  // 1. Teknik Kurulum
+  
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
   });
 
-  // 2. Context Yükleme ve Doğrulama
+  
   const context = getExperimentContext<LinguisticTestData>(EXP_TYPE);
   if (!context.isValid) {
     await jsPsych.run([createInvalidPathTimeline()]);
@@ -62,14 +62,14 @@ export async function run(_options: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (DataPipe Zorunlu Alanlar)
+  
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
     participant_group: group,
   });
 
-  // Katılım Kontrolü
+  
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -84,16 +84,16 @@ export async function run(_options: RunOptions) {
     return jsPsych;
   }
 
-  // 3. OTURUM KURULUMU (Yeni Başlangıç)
+  
   if (!sessionToUse) {
-    // A. Dil Seçimi Ekranı
+    
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
 
     const lastTrialData = jsPsych.data.get().last(1).values()[0];
     const selectedLang = lastTrialData.lang as Language;
     if (!selectedLang) throw new Error("Language selection failed.");
 
-    // 🛡️ KRİTİK: Spinner mesajı için dili anlık değiştir
+    
     await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
@@ -107,7 +107,7 @@ export async function run(_options: RunOptions) {
     }
 
     try {
-      // Veritabanı Kaydı
+      
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,
@@ -115,13 +115,13 @@ export async function run(_options: RunOptions) {
         group!
       );
 
-      // B. Yeni oturum özelliklerini mühürle
+      
       jsPsych.data.addProperties({
         lang: selectedLang,
         participant_number: participantNumber,
       });
 
-      // Stimuli Üretimi
+      
       const { learningPhaseStimuli, testPhaseStimuli } =
         generateLinguisticStimuli(studyPool, foilPool, {
           itemCountLearning: LING_CONFIG.ITEM_COUNT_LEARNING,
@@ -152,8 +152,8 @@ export async function run(_options: RunOptions) {
       return jsPsych;
     }
   } else {
-    // 🛡️ ADIM 2: RESUME (GERİ YÜKLEME) SIRASINDA MANUEL MERGE
-    // Zorunlu alanları (subject_id vb.) eski trial verileriyle birleştiriyoruz.
+    
+    
     if (sessionToUse.trialData?.length > 0) {
       sessionToUse.trialData.forEach((d: any) => {
         jsPsych.data.get().push({

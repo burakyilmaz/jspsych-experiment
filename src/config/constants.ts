@@ -9,7 +9,7 @@ const IS_TEST_MODE = false;
  * Global Deney Ayarları
  */
 export const GLOBAL_CONFIG = {
-  CHECK_PREVIOUS_PARTICIPATION: !IS_TEST_MODE, // Testte aynı ID ile tekrar girişe izin ver
+  CHECK_PREVIOUS_PARTICIPATION: false, // Testte aynı ID ile tekrar girişe izin ver
   SUPABASE_URL: "https://sbkcqywkaezyqpilktpn.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_XcxxH7-0FhA4vlMroFvt6Q_BxtlJZE2",
   MAX_PRELOAD_TIME_MS: 30000,
