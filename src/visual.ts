@@ -19,7 +19,7 @@ import trTranslations from "../src/locales/tr/translation.json";
 import deTranslations from "../src/locales/de/translation.json";
 import { RunOptions, VisualTestData } from "./types/interfaces";
 
-// 🛡️ Merkezi konfigürasyon importları
+
 import {
   GLOBAL_CONFIG,
   EXPERIMENT_CONFIGS,
@@ -48,13 +48,13 @@ const EXP_TYPE = ExperimentType.VISUAL;
 const VIS_CONFIG = EXPERIMENT_CONFIGS.visual;
 
 export async function run({ assetPaths }: RunOptions) {
-  // 1. Teknik Kurulum
+  
   const { jsPsych } = await setupExperiment({
     trResources: trTranslations,
     deResources: deTranslations,
   });
 
-  // 2. Context Yükleme ve Doğrulama
+  
   const context = getExperimentContext<VisualTestData>(EXP_TYPE);
   if (!context.isValid) {
     await jsPsych.run([createInvalidPathTimeline()]);
@@ -64,14 +64,14 @@ export async function run({ assetPaths }: RunOptions) {
   const { group, subject_id, savedSession: loadedSession } = context;
   let sessionToUse = loadedSession;
 
-  // 🛡️ ADIM 1: Global özellikleri hemen mühürle (Zorunlu Alanlar için)
+  
   jsPsych.data.addProperties({
     subject_id,
     experiment_type: EXP_TYPE,
     participant_group: group,
   });
 
-  // Katılım Kontrolü
+  
   if (
     GLOBAL_CONFIG.CHECK_PREVIOUS_PARTICIPATION &&
     SessionManager.isCompleted(EXP_TYPE)
@@ -86,16 +86,16 @@ export async function run({ assetPaths }: RunOptions) {
     return jsPsych;
   }
 
-  // 3. OTURUM KURULUMU (Yeni Başlangıç)
+  
   if (!sessionToUse) {
-    // A. Dil Seçimi
+    
     await jsPsych.run([createLanguageSelectionTimeline(jsPsych)]);
 
     const lastTrialData = jsPsych.data.get().last(1).values()[0];
     const selectedLang = lastTrialData.lang as Language;
     if (!selectedLang) throw new Error("Language selection failed.");
 
-    // 🛡️ KRİTİK: Spinner'dan ÖNCE dili değiştiriyoruz
+    
     await i18next.changeLanguage(selectedLang);
 
     const displayElement = jsPsych.getDisplayElement();
@@ -109,7 +109,7 @@ export async function run({ assetPaths }: RunOptions) {
     }
 
     try {
-      // Veritabanı Kaydı
+      
       const participantNumber = await registerParticipant(
         selectedLang,
         subject_id,

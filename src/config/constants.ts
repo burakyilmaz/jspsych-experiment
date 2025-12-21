@@ -3,7 +3,7 @@
  * true  -> Test Modu (Hızlı geçişler, az madde, katılım sınırı yok)
  * false -> Production (Gerçek süreler, tüm maddeler, katılım sınırı aktif)
  */
-const IS_TEST_MODE = true;
+const IS_TEST_MODE = false;
 
 /**
  * Global Deney Ayarları
